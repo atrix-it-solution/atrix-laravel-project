@@ -1,0 +1,34 @@
+.Service-hero-slider .slick-dots{
+    bottom: 50px;
+}
+.Service-hero-slider button.slick-arrow {
+    display: block!important;
+    z-index: 10!important;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background: black;
+    opacity: 0.7;
+}
+.Service-hero-slider button.slick-prev {
+    left: 20px;
+}
+.Service-hero-slider button.slick-next{
+    right: 20px;
+}
+
+.slick-prev::before, .slick-next::before {
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900; 
+    font-size: 24px;  
+    color: white;  
+    opacity: 0.75;
+ 
+}
+.slick-prev::before {
+    content: "\f104"; 
+}
+
+.slick-next::before {
+    content: "\f105"; 
+}

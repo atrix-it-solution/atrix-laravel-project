@@ -1,0 +1,56 @@
+/* .portfolio-animated-cards .card-content {
+    position: absolute;
+    bottom: 60px;
+    right: 0px;
+    z-index: 100;
+    transform: translateX(40px);
+    color: black;
+}
+
+.portfolio-animated-cards .Animated-card {
+    position: relative;
+}
+ 
+.portfolio-animated-cards h3 {
+    font-size: 36px;
+    font-weight: 700;
+    text-align: end;
+}
+
+.portfolio-animated-cards p {
+    font-size: 16px;
+    text-align: end;
+}
+
+.Animated-card{ 
+  margin-top: 100px;
+} */
+
+.category-btn {
+  position: relative;
+  background: linear-gradient(to right, var(--blue), var(--green));
+  z-index: 2;
+  cursor: pointer;
+}
+.category-btn::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 1px;
+  background: rgba(0, 0, 0, 0.815);
+  opacity: 1;
+  border-radius: 100px;
+  transition: all 0.1s ease-in-out;
+}
+.category-btn:hover::after {
+  opacity: 0;
+}
+.category-btn.active::after {
+  opacity: 0;
+}
+.category-btn .active {
+    background: linear-gradient(to right, var(--blue), var(--green));
+
+
+  }
+

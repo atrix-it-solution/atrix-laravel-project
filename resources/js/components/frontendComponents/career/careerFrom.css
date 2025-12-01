@@ -1,0 +1,9 @@
+.career-select {
+  background-color: #333;
+  color:  #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  appearance: none; 
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}

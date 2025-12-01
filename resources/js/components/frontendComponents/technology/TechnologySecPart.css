@@ -1,0 +1,118 @@
+.card-bg {
+  position: relative;
+  background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+  border-radius: 12px;
+  width: 100%;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05); */
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Enhanced Hover Effect */
+.card-bg:hover {
+  transform: scale(1.05) rotate(1deg);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+}
+
+/* Improved Image Animation */
+.card-bg img {
+  height: 2rem;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  transform-origin: center;
+}
+
+.card-bg:hover img {
+  transform: scale(1.15) rotate(-2deg);
+}
+
+
+
+
+/* Advanced Shine Effect */
+.card-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  opacity: 0;
+  z-index: 2;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.card-bg:hover::after {
+  animation: shineEffect 2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation-delay: 0.21s;
+}
+
+/* Subtle Pulse Effect */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.05); }
+  50% { box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.1); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+.card-bg:hover {
+  animation: pulseGlow 1.5s ease-out infinite;
+}
+
+/* Enhanced Shine Animation */
+@keyframes shineEffect {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  40% {
+    opacity: 0.4;
+  }
+  100% {
+    left: 150%;
+    opacity: 0;
+  }
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+  .card-bg {
+    min-height: 200px;
+  }
+  
+  .card-bg img {
+    height: 3.5rem;
+  }
+
+  .card-bg h6 {
+    font-size: 1.125rem;
+  }
+}
+
+
+.icon-ul li:nth-child(1) > div,
+.icon-ul li:nth-child(6) > div {
+    min-height: 250px;
+}
