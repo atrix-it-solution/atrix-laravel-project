@@ -6,7 +6,7 @@ use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     return Inertia::render('frontend/Home');
-})->name('home');
+})->name('/');
 
 Route::get('/about', function () {
     return Inertia::render('frontend/About');
@@ -14,11 +14,28 @@ Route::get('/about', function () {
 
 Route::get('/services', function () {
     return Inertia::render('frontend/Services');
+
 })->name('services');
+Route::get('/services/{slug}', function ($slug) {
+    $service = Services::where('slug', $slug)->firstOrFail();
+
+    return inertia('frontend/Service', [
+        'service' => $service
+    ]);
+});
+
 
 Route::get('/portfolio', function () {
     return Inertia::render('frontend/Portfolio');
 })->name('portfolio');
+
+Route::get('/blog', function () {
+    return Inertia::render('frontend/Blog');
+})->name('blog');
+
+Route::get('/contact-us', function () {
+    return Inertia::render('frontend/ContactUs');
+})->name('contact-us');
 
 // Route::get('/', function () {
 //     return Inertia::render('welcome', [

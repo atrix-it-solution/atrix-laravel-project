@@ -31,7 +31,7 @@ export default function NavBar() {
     { id: "about", text: "About", path: "/about" },
     { id: "services", text: "Services", path: "/services" },
     { id: "portfolio", text: "Portfolio", path: "/portfolio" },
-    { id: "blog", text: "Blog", path: "/Blog" },
+    { id: "blog", text: "Blog", path: "/blog" },
     { id: "contact", text: "Contact", path: "/contact-us" },
   ];
 
@@ -57,7 +57,7 @@ export default function NavBar() {
     // setLoading(true);
     setIsExiting(true);
     setTimeout(() => {
-      // router.visit(path);
+      router.visit(path);
       setMenuOpen(false);
       setIsExiting(false);
         // setTimeout(() => setLoading(false), 50);
@@ -158,8 +158,8 @@ export default function NavBar() {
                       className={`menu-item-wrapper ${menuOpen && !isExiting ? "fade-in" : isExiting ? "fade-out-left" : ""}`}
                       style={{ animationDelay: `${isExiting ? 0 : 0.4 + index * 0.2}s` }}
                     >
-                      <Link
-                        href={item.path}
+                      <button
+                       
                         type="button"
                         className={`menu-link overflow-hidden ${hoveredItem === item.id ? "hovered" : hoveredItem !== null ? "not-hovered" : ""}`}
                         onMouseEnter={() => setHoveredItem(item.id)}
@@ -167,7 +167,7 @@ export default function NavBar() {
                         onClick={() => handleNavClick(item.path)}
                       >
                         {item.text}
-                      </Link>
+                      </button>
                       <span className="item-number">0{index + 1}</span>
                     </li>
                   ))}

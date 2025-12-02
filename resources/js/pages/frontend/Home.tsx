@@ -7,12 +7,6 @@ import LogoSlider from '../../components/frontendComponents/marqueelogo/LogoSlid
 import useIntersectionObserver from '../../components/frontendComponents/useIntersectionObserver';
 
 const OurServices = React.lazy(() => import('../../components/frontendComponents/OurServices'));
-// const OurServices = React.lazy(() => import(
-//   /* webpackPrefetch: true */
-//   /* webpackPreload: false */
-//   /* webpackChunkName: "our-services" */
-//   '../../components/frontendComponents/OurServices'
-// ));
 const VideoSection = React.lazy(() => import('../../components/frontendComponents/VideoSection'));
 const OurSolution = React.lazy(() => import('../../components/frontendComponents/OurSolution'));
 const OurPortfolio = React.lazy(() => import('../../components/frontendComponents/OurPortfolio'));
@@ -22,25 +16,33 @@ import { CiPlay1 } from "react-icons/ci";
 import LinkButton from '../../components/frontendComponents/button/LinkButton';
 import SeoTags from '../../components/frontendComponents/seoTags/SeoTags';
 import MasterLayout from '@/layouts/frontendLayouts/MasterLayouts';
+import { Head } from '@inertiajs/react';
 
-const thumbnail2 = "../assets/thumbnail/t2.png"
-const about_video = '../assets/About_video.mp4'
+const thumbnail2 = "/assets/thumbnail/t2.png"
+const about_video = '/assets/About_video.mp4'
 const AboutImage = "/assets/aboutus.jpg";
-const Assetarrow = "../assets/Asset_arrow.svg"
-const video_circle = '../assets/video_circle.svg'
+const Assetarrow = "/assets/Asset_arrow.svg"
+const video_circle = '/assets/video_circle.svg'
 
-
+interface VisibleSections {
+  ourServices: boolean;
+  countSection: boolean;
+  ourSolution: boolean;
+  ourPortfolio: boolean;
+  technology: boolean;
+  letterMarquee: boolean;
+}
 const Home = () => {
-  const ourServicesRef = useRef(null);
-  const countSectionRef = useRef(null);
-  const ourSolutionRef = useRef(null);
-  const ourPortfolioRef = useRef(null);
-  const technologyRef = useRef(null);
-  const letterMarqueeRef = useRef(null);
+  const ourServicesRef = useRef<HTMLDivElement | null>(null);
+  const countSectionRef = useRef<HTMLDivElement | null>(null);
+  const ourSolutionRef = useRef<HTMLDivElement | null>(null);
+  const ourPortfolioRef = useRef<HTMLDivElement | null>(null);
+  const technologyRef = useRef<HTMLDivElement | null>(null);
+  const letterMarqueeRef = useRef<HTMLDivElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
 
-  const [visibleComponents, setVisibleComponents] = useState({
+  const [visibleComponents, setVisibleComponents] = useState<VisibleSections>({
     ourServices: false,
     countSection: false,
     ourSolution: false,
@@ -49,7 +51,7 @@ const Home = () => {
     letterMarquee: false,
   });
 
-  const isOurServicesVisible = useIntersectionObserver(ourServicesRef, { threshold: 0.1 });
+  const isOurServicesVisible =  useIntersectionObserver(ourServicesRef, { threshold: 0.1 });
   const isCountSectionVisible = useIntersectionObserver(countSectionRef, { threshold: 0.1 });
   const isOurSolutionVisible = useIntersectionObserver(ourSolutionRef, { threshold: 0.1 });
   const isOurPortfolioVisible = useIntersectionObserver(ourPortfolioRef, { threshold: 0.1 });
@@ -95,7 +97,7 @@ const Home = () => {
   useEffect(() => {
     const elements = document.querySelectorAll('.moveWithMouse');
 
-    const moveElements = (e) => {
+    const moveElements = (e: MouseEvent) => {
       elements.forEach(element => {
         const rect = element.getBoundingClientRect();
         const mouseX = e.clientX;
@@ -105,11 +107,20 @@ const Home = () => {
         const moveY = (mouseY - (rect.top + rect.height / 2)) * 0.02;
 
 
-        element.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        element.setAttribute("style", `transform: translate(${moveX}px, ${moveY}px)`); 
       });
     };
 
-    window.addEventListener('mousemove', moveElements);
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+
+    window.addEventListener("mousemove", (e: MouseEvent) => {
+      if (timeout) return;
+      timeout = setTimeout(() => {
+        moveElements(e);
+        timeout = null;
+      }, 50);
+    });
+
 
     return () => {
       window.removeEventListener('mousemove', moveElements);
@@ -125,7 +136,7 @@ const Home = () => {
 
   // Video modal effect
   useEffect(() => {
-    let timer;
+    let timer: ReturnType<typeof setTimeout>;
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       // Show video after 3 seconds
@@ -146,11 +157,12 @@ const Home = () => {
   return (
     <>
     <MasterLayout>
-      <SeoTags
-        title="Atrix IT Solutions | Innovative IT Services for Businesses"
-        description="Atrix IT Solutions offers cutting-edge IT services, including web development, digital marketing, graphic design, video production and more. "
-        keywords="graphic design Agency, small business marketing agency, branding and creative agency,responsive website design agency,branding creative agency,commercial video production company,brand development agency,commercial photography company"
-      />
+      <Head>
+        <title>{"Atrix IT Solutions | Innovative IT Services for Businesses"}</title>
+        <meta name="description" content={"Atrix IT Solutions offers cutting-edge IT services, including web development, digital marketing, graphic design, video production and more."} />
+        <meta name="keywords" content={"graphic design Agency, small business marketing agency, branding and creative agency,responsive website design agency,branding creative agency,commercial video production company,brand development agency,commercial photography company"}/>
+      </Head>
+      
       <div className=' '>
         <div className=" overflow-hidden">
           <div className="relative w-full text-(--whitelight) hero_section px-5 ">
@@ -230,7 +242,7 @@ const Home = () => {
               <div className='inline-block relative max-w-[100%] '>
                 <h2 className="font-bold absolute z-50 text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl  text-transparent top-0  -translate-1/2  left-1/2 whitespace-nowrap " style={{ WebkitTextStroke: "1px white" }}>About us</h2>
                 <div className="aboutimgbox">
-                  <img src={AboutImage} className="h-full  w-auto min-h-[600px] object-cover relative max-w-[100%]" alt="About Us" />
+                  <img src={AboutImage} className="h-full  w-auto min-h-[600px] object-cover relative max-w-[100%]" alt="About Us"  loading="lazy"/>
                 </div>
                 <div className='video-button-sec' >
                   <div className="video-circle">

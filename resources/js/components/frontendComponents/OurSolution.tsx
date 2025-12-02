@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FiPlus } from "react-icons/fi";
-const icons1 = "../assets/SolutionImage/icon1.svg";
-const icons2 = "../assets/SolutionImage/icon2.svg";
-const icons3 = "../assets/SolutionImage/icon3.svg";
-const icons4 = "../assets/SolutionImage/icon4.svg";
+const icons1 = "/assets/SolutionImage/icon1.svg";
+const icons2 = "/assets/SolutionImage/icon2.svg";
+const icons3 = "/assets/SolutionImage/icon3.svg";
+const icons4 = "/assets/SolutionImage/icon4.svg";
  
 const blurbContent = [
   {

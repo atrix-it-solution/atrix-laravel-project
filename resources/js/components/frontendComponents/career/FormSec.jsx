@@ -3,7 +3,7 @@ import { RiAttachment2 } from "react-icons/ri";
 import hire_img from "../../assets/career/hire.svg";
 import Button from "../Button";
 import emailjs from '@emailjs/browser';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@inertiajs/react";
 import './careerFrom.css';
 
 const jobOptions = [

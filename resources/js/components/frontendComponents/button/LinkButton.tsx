@@ -3,7 +3,7 @@ import { RxArrowTopRight } from 'react-icons/rx';
 import { Link } from '@inertiajs/react';
 
 interface LinkButtonProps {
-  mybtn: string;
+  mybtn: React.ReactNode;
   btnLink: string;
   bgColor?: string;
   hoverColor?: string;
@@ -46,7 +46,7 @@ const LinkButton: React.FC<LinkButtonProps> = ({
     <Link
       href={btnLink}
       ref={btnRef}
-      aria-label={mybtn}
+      aria-label={typeof mybtn === "string" ? mybtn : "button"}
       className={`${bgColor} font-bold text-white px-2 py-[6px] ps-4 lg:px-4 lg:py-2 
                   duration-300 rounded-lg ${hoverColor} cursor-pointer flex items-center gap-2 
                   hover:scale-104 group service-cta-btn flex-in text-[14px]`}

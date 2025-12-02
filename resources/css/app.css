@@ -1262,6 +1262,9 @@ animation: fadeInUp 1s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; /* Using cubic
   transform: translateY(-110px);
   transition: transform 0.6s ease-in-out;
 }
-
+#mybtn2 button:hover{
+    background-color: white;
+    color: var(--blue);
+}
 
   

@@ -3,8 +3,8 @@ import { useEffect, useState, RefObject } from 'react';
 interface UseIntersectionObserverOptions extends IntersectionObserverInit {}
 
 const useIntersectionObserver = <T extends HTMLElement>(
-  ref: RefObject<T>,
-  options?: UseIntersectionObserverOptions
+  ref: RefObject<HTMLElement | null>,
+  options?: IntersectionObserverInit
 ): boolean => {
   const [isVisible, setIsVisible] = useState(false);
 

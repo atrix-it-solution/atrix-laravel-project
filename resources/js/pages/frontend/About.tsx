@@ -27,6 +27,7 @@ const icon8  = "/assets/AboutUs/keys-sec/Kindness.svg";
 const icon9  = "/assets/AboutUs/keys-sec/value.svg";
 const icon10 = "/assets/AboutUs/keys-sec/Agile-Solutions.svg";
 const thumbnail = "/assets/thumbnail/t.png";
+import { Head } from "@inertiajs/react";
 
 const cards = [
   { id: 1, title: "Card 1", color: "bg-red-500" },
@@ -36,8 +37,11 @@ const cards = [
   { id: 5, title: "Card 5", color: "bg-purple-500" },
   { id: 6, title: "Card 6", color: "bg-pink-500" },
 ];
-
-const About = () => {
+interface AboutProps {
+    title: string;
+    description: string;
+}
+const About : React.FC<AboutProps> = ({ title, description })=> {
   const [index, setIndex] = useState(0);
 
   const nextSlide = () => {
@@ -99,10 +103,11 @@ const About = () => {
     <>
     <MasterLayout>
       {/* video-section */}
-      <SeoTags
-        title="Get to Know Us | The Story of Atrix IT Solutions"
-        description="Welcome to Atrix IT Solutions! Learn how we help businesses grow with web development, digital marketing, and much more."
-      />
+      <Head>
+        <title>{"Get to Know Us | The Story of Atrix IT Solutions"}</title>
+        <meta name="description" content={"Welcome to Atrix IT Solutions! Learn how we help businesses grow with web development, digital marketing, and much more."} />
+      </Head>
+
 
       <div className="video-sec mx-6 pt-[132px] pb-[40px] md:pb-[54px]">
         <div className="pointer-events-none  ">
@@ -234,41 +239,3 @@ const About = () => {
 
 export default About;
 
-const keyItems = [
-  {
-    icon: icon5,
-    title: "Values",
-    description:
-      "Ethical solutions and guided by a moral compass we add value to our client's lives through our products and solutions.",
-  },
-  {
-    icon: icon6,
-    title: "Innovation",
-    description:
-      "Ethical solutions and guided by a moral compass we add value to our client's lives through our products and solutions.",
-  },
-  {
-    icon: icon7,
-    title: "Integrity",
-    description:
-      "Ethical solutions and guided by a moral compass we add value to our client's lives through our products and solutions.",
-  },
-  {
-    icon: icon8,
-    title: "Agile Solutions",
-    description:
-      "Ethical solutions and guided by a moral compass we add value to our client's lives through our products and solutions.",
-  },
-  {
-    icon: icon9,
-    title: "Culture",
-    description:
-      "Ethical solutions and guided by a moral compass we add value to our client's lives through our products and solutions.",
-  },
-  {
-    icon: icon10,
-    title: "Kindness",
-    description:
-      "Ethical solutions and guided by a moral compass we add value to our client's lives through our products and solutions.",
-  },
-];

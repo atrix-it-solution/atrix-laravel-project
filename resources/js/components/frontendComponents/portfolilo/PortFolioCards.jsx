@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
-import { Link } from "react-router-dom"
+import { Link } from "@inertiajs/react"
 import projectsData from '../../data/projectsData';
 
  

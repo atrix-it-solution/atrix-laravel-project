@@ -5,7 +5,7 @@ import useLenis from '../../hooks/useLenis';
 import HeroCommon from '../../components/frontendComponents/herocommon/HeroCommon' ;
 import SeoTags from '../../components/frontendComponents/seoTags/SeoTags';
 import MasterLayout from '@/layouts/frontendLayouts/MasterLayouts';
-
+import { Head } from '@inertiajs/react';
 
 
 
@@ -17,10 +17,11 @@ const Portfolio = () => {
     return (
         <>
             <MasterLayout>
-                <SeoTags
-                    title="Our Portfolio | Explore Successful Projects by Atrix IT Solutions"
-                    description="Discover the work we’re proud of at Atrix IT Solutions. check out our portfolio to see how we help businesses succeed with creative IT solutions."
-                />
+                <Head>
+                    <title>{"Our Portfolio | Explore Successful Projects by Atrix IT Solutions"}</title>
+                    <meta name="description" content={"Discover the work we’re proud of at Atrix IT Solutions. check out our portfolio to see how we help businesses succeed with creative IT solutions."} />
+                </Head>
+               
                 <HeroCommon heroData={heroData} />
                 <PortfolioAnimatedCards></PortfolioAnimatedCards>
             </MasterLayout> 

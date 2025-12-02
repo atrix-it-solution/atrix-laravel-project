@@ -6,6 +6,7 @@ import LinkButton from "../../components/frontendComponents/button/LinkButton";
 import HeroCommon from "../../components/frontendComponents/herocommon/HeroCommon";
 import SeoTags from "../../components/frontendComponents/seoTags/SeoTags";
 import MasterLayout from "@/layouts/frontendLayouts/MasterLayouts";
+import { Head } from "@inertiajs/react";
 
 const chess_image = "/assets/services/chess.png"
 
@@ -23,10 +24,11 @@ const Services = () => {
   return (
     <>
     <MasterLayout>
-      <SeoTags
-        title="Our Services | Explore Our IT Services by Atrix IT Solutions"
-        description="Discover the wide range of IT services offered by Atrix IT Solutions. , including branding, digital marketing, website development, and visual effects."
-      />
+      <Head>
+          <title>{"Our Services | Explore Our IT Services by Atrix IT Solutions"}</title>
+          <meta name="description" content={"Discover the wide range of IT services offered by Atrix IT Solutions. , including branding, digital marketing, website development, and visual effects."} />
+      </Head>
+     
 
       <HeroCommon heroData={heroData} />
 

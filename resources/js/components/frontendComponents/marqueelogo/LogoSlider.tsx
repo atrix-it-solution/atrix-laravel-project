@@ -15,6 +15,9 @@ interface Brand {
   featuredImage: string;
   updatedAt?: string;
 }
+interface LogoSliderProps {
+  className?: string;
+}
 
 // TypeScript interface for static logo
 interface LogoImage {
@@ -22,7 +25,7 @@ interface LogoImage {
   img: string;
 }
 
-const LogoSlider = () => {
+const LogoSlider: React.FC<LogoSliderProps> = ({ className })=> {
   const Logoimage = [
     { id: 1, img: logo1 },
     { id: 2, img: logo2 },
@@ -59,7 +62,7 @@ const LogoSlider = () => {
 //   }, [BACKEND_URL]);
 
   return (
-    <div className='container mx-auto max-w-full '>
+    <div className={`container mx-auto max-w-full ${className || ""}`}>
       <h6 className='flex justify-center items-center  mb-5 md:mb-10 font-bold text-(--white) px-5 text-center'>Over 1K+ Software Businesses Growing with Atrix IT Solutions</h6>
 
       <div className='marquee-2'>

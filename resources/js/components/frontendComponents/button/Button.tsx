@@ -2,9 +2,12 @@ import React, { useRef, useEffect } from "react";
 import { RxArrowTopRight } from "react-icons/rx";
 
 interface ButtonProps {
+  type?:string;
   mybtn: string;
   btnLink?: string;
   targetRef?: React.RefObject<HTMLElement>;
+  disabled:boolean;
+
 }
 
 const Button: React.FC<ButtonProps> = ({ mybtn, targetRef }) => {

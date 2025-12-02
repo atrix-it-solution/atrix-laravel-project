@@ -1,6 +1,6 @@
 import React from "react";
-const videoSrc = "../assets/AtrixHomevideo.mp4";
-const thumbnail = "../assets/thumbnail/t.png";
+const videoSrc = "/assets/AtrixHomevideo.mp4";
+const thumbnail = "/assets/thumbnail/t.png";
 
 const VideoSection = () => {
   return (
