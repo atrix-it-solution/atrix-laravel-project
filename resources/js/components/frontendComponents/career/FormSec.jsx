@@ -1,7 +1,7 @@
 import React, { useState, useEffect,useRef } from "react";
 import { RiAttachment2 } from "react-icons/ri";
 import hire_img from "../../assets/career/hire.svg";
-import Button from "../Button";
+import Button from '../../frontendComponents/button/Button'
 import emailjs from '@emailjs/browser';
 import { useNavigate } from "@inertiajs/react";
 import './careerFrom.css';
@@ -276,7 +276,7 @@ export default CareerFormSec;
 // import { RiAttachment2 } from "react-icons/ri";
 // import axios from "axios";
 // import hire_img from "../../assets/career/hire.svg";
-// import Button from "../Button";
+// import Button from '../../frontendComponents/button/Button'
 // import './careerFrom.css';
 // import { useJobvacancies } from "../../GetContextApi/JobVacanciesGetContext";
 

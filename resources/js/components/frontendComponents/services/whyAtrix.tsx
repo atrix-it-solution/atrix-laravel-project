@@ -1,7 +1,14 @@
 import React from 'react'
 
+interface WhyAtrixProps {
+  secData: {
+    why_atrix_heading: string;
+    why_atrix_subheading: string;
+    why_atrix_desc: string[];
+  };
+}
 
-const WhyAtrix = ({ secData }) => {
+const WhyAtrix: React.FC<WhyAtrixProps> = ({ secData }) => {
   return (
     <div className='why-atrix my-36' >
       <div className='container  mx-auto' >

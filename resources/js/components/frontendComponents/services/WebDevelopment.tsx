@@ -1,7 +1,21 @@
 import React from "react";
-import Button from "../Button";
+import Button from '../../frontendComponents/button/Button'
 
-const WebDevelopment = ({ secData, targetRef }) => {
+interface WebDevelopmentProps {
+  secData: {
+    service_title: string;
+    heading_1: string;
+    description_1: string;
+    img_1: string;
+    heading_2: string;
+    description_2: string;
+    img_2: string;
+    img_3: string;
+    
+  };
+  targetRef?: React.RefObject<HTMLDivElement | null>;
+}
+const WebDevelopment:React.FC<WebDevelopmentProps> = ({ secData, targetRef }) => {
   return (
     <div className="web-development-sec mb-20 lg:mb-36 pt-4">
       <div className="container  mx-auto  lg:px-0">

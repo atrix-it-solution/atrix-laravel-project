@@ -1,9 +1,21 @@
 import React from 'react'
-import Button from '../Button'
+import Button from '../../frontendComponents/button/Button'
 
 
+interface Card {
+    cardTitle: string;
+    desc: string;
+}
 
-const WhyNeedBranding = ({ secData, targetRef }) => {
+interface WhyNeedBrandingProps {
+    secData: {
+        service_title: string;
+        cards_sec_data: Card[];
+    };
+    targetRef?: React.RefObject<HTMLDivElement | null>;
+}
+
+const WhyNeedBranding:React.FC<WhyNeedBrandingProps> = ({ secData, targetRef }) => {
 
     return (
         <div className='why-need-branding my-36' >

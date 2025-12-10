@@ -1,7 +1,20 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const ProcessCards = ({ secData }) => {
+interface ProcessCard {
+  title: string;
+  desc: string;
+}
+
+interface ProcessCardsProps {
+  secData: {
+    service_title: string;
+    process_cards: ProcessCard[];
+  };
+  targetRef?: React.RefObject<HTMLDivElement | null>;
+}
+
+const ProcessCards:React.FC<ProcessCardsProps> = ({ secData }) => {
   const [activeCard, setActiveCard] = useState(0);
 
   // Variants for animation

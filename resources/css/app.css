@@ -673,7 +673,7 @@ nav.menu-open .menu-btn:after {
   right: -131px;
   height: 400px;
   width: 400px;
-  background: url(/logo/ais_favicon.png) ;
+  background: url(/assets/logo/ais_favicon.png) ;
   background-size: contain;
   background-repeat: no-repeat;
   filter: grayscale(1) brightness(2);
@@ -1268,3 +1268,80 @@ animation: fadeInUp 1s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; /* Using cubic
 }
 
   
+
+.blog_Full_contant_sec .div p:not(:last-child),
+.blog_Full_contant_sec .div ul:not(:last-child) {
+  margin-bottom: 15px;
+}
+
+
+
+.blog_Full_contant_sec .div {
+  border-radius: 12px;
+  padding: 32px;
+  border: 1px solid #ffffff1a;
+  background-color: #23252482;
+}
+
+
+.blog_Full_contant_sec p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+
+
+.blog_Full_contant_sec .sec-heading {
+  font-size: 30px;
+  font-weight: 700;
+  color: #ffffff;
+
+  margin-bottom: 12px;
+}
+
+.blog_Full_contant_sec .heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+/* Lists */
+.blog_Full_contant_sec ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.blog_Full_contant_sec li {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Featured Image */
+.featured-img img {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Back button */
+.blog_btn_text {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+
+/* Category chips */
+.category-sec div {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+
+/* Social media icons */
+.social-media-icons ul li svg {
+  color: white;
+  transition: color 0.3s ease;
+}
+.social-media-icons ul li:hover svg {
+  color: var(--blue);
+}

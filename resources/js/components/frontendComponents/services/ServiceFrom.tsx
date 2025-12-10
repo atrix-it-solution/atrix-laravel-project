@@ -1,6 +1,5 @@
 import React from 'react'
-import ColoredButton from '../ColoredButton'
-import Button from '../Button'
+import Button from '../../frontendComponents/button/Button'
 
 const ServiceFrom = () => {
     return (
@@ -27,7 +26,7 @@ const ServiceFrom = () => {
                         <div className='flex gap-8'>
                             <p className="text-white text-lg text-end  min-w-1/3 self-end">Also, I would like to add</p>
 
-                            <textarea placeholder="Message" rows="3" className=" text-lg  w-full bg-tra py-2 nsparent border-b border-gray-600 text-gray-400 outline-none"></textarea>
+                            <textarea placeholder="Message" rows={3} className=" text-lg  w-full bg-tra py-2 nsparent border-b border-gray-600 text-gray-400 outline-none"></textarea>
                         </div>
 
                         <div className=' flex justify-end mt-10'>
