@@ -5,13 +5,14 @@ interface ButtonProps {
   type?:string;
   mybtn: string;
   btnLink?: string;
-  targetRef?: React.RefObject<HTMLElement>;
-  disabled:boolean;
+  targetRef?: React.RefObject<HTMLDivElement | null>;
+  disabled?:boolean;
 
 }
 
 const Button: React.FC<ButtonProps> = ({ mybtn, targetRef }) => {
   const btnRef = useRef<HTMLButtonElement | null>(null);
+  
 
   useEffect(() => {
     const btn = btnRef.current;

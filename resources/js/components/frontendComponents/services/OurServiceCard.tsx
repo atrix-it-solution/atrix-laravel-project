@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "@inertiajs/react";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import ServicesData from "../../../data/ServicesData";
-import AOS from "aos"; // Import AOS
-import "aos/dist/aos.css"; // Import AOS styles
+import AOS from "aos"; 
+import "aos/dist/aos.css"; 
 
 const OurServiceCard = () => {
   useEffect(() => {
@@ -39,12 +39,14 @@ const OurServiceCard = () => {
   const servicesPerColumn = Math.ceil(servicesLength / columns);
   const dividedServices = [];
 
+if (ServicesData && ServicesData.length > 0) {
   for (let i = 0; i < columns; i++) {
     const start = i * servicesPerColumn;
     const end = start + servicesPerColumn;
     const chunk = ServicesData.slice(start, end);
     dividedServices.push(chunk);
   }
+}
 
   // console.log(dividedServices);
 
@@ -62,7 +64,7 @@ const OurServiceCard = () => {
                   className=" inline-block w-full pt-20"
                   data-aos="fade-up" // Add fade-up animation when the item appears
                 >
-                  <Link href={`/service/${item.slug}`} className="cursor-pointer">
+                  <Link href={`/services/${item.slug}`} className="cursor-pointer">
                     <h3 className="heading font-bold flex items-center gap-2">
                       <div
                         className="icon-bg min-w-12 h-12 relative flex justify-center items-center bg-gradient-to-r from-(--blue) to-(--green) rounded-full translate-y-2 mr-1 mb-3"
@@ -85,7 +87,7 @@ const OurServiceCard = () => {
                       // data-aos="fade-left" // Add fade-left animation for the list items
                       >
                         <Link
-                          href={`/service/${item.slug}`}
+                          href={`/services/${item.slug}`}
                           className="flex items-center justify-between w-full group-hover:text-(--green) font-bold"
                         >
                           <span>{tagItem}</span>
@@ -109,7 +111,7 @@ const OurServiceCard = () => {
               className=" inline-block w-full pt-20"
               data-aos="fade-up" // Add fade-up animation when the item appears
             >
-              <Link href={`/service/${item.slug}`} className="cursor-pointer">
+              <Link href={`/services/${item.slug}`} className="cursor-pointer">
                 <h3 className="heading font-bold flex items-center gap-2">
                   <div
                     className="icon-bg min-w-12 h-12 relative flex justify-center items-center bg-gradient-to-r from-(--blue) to-(--green) rounded-full translate-y-2 mr-1 mb-3"
@@ -132,7 +134,7 @@ const OurServiceCard = () => {
                   // data-aos="fade-left" // Add fade-left animation for the list items
                   >
                     <Link
-                      href={`/service/${item.slug}`}
+                      href={`/services/${item.slug}`}
                       className="flex items-center justify-between w-full group-hover:text-(--green) font-bold"
                     >
                       <span>{tagItem}</span>

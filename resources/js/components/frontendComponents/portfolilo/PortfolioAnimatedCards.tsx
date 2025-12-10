@@ -2,23 +2,11 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { Link } from "@inertiajs/react";
 import "./PortfolioAnimatedCards.css";
-import axios from "axios";
-import portfolioData from "../../../data/portfolioData"; // Fallback Local Data
+import portfolioData from "../../../data/portfolioData"; 
+import { Project } from "@/types/portfolio";
 
-// TYPES ========================================
-interface Category {
-    Name: string;
-}
 
-interface Project {
-    id: number;
-    title: string;
-    coverImg: string;
-    project_title: string;
-    project_link: string;
-    single_page_page: string;
-    category: string;
-}
+
 
 // Custom Hook for Large Screens =================
 const useIsLargeScreen = () => {
@@ -34,7 +22,7 @@ const useIsLargeScreen = () => {
 };
 
 // MAIN COMPONENT ================================
-const PortfolioAnimatedCards: React.FC = () => {
+const PortfolioAnimatedCards = () => {
     // const [categories, setCategories] = useState<Category[]>([]);
     const [getData, setGetData] = useState<Project[]>([]);
     const [allProjects, setAllProjects] = useState<Project[]>([]);
@@ -58,8 +46,8 @@ const PortfolioAnimatedCards: React.FC = () => {
     // Load Projects
     useEffect(() => {
         // If API available, replace here
-        setAllProjects(portfolioData);
-        setGetData(portfolioData);
+       setAllProjects(portfolioData as Project[]);
+        setGetData(portfolioData as Project[]);
     }, []);
 
     // Filter Projects
@@ -210,10 +198,10 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({ item, index }) => {
         <motion.div ref={cardRef} style={{ y }} className="transition-transform duration-100 relative mt-14 lg:mt-0">
             {/* CARD IMAGE */}
             <div className="img-wrapper w-full h-[700px] hover:shadow-[0px_0px_18px_#a2bab0] transition-shadow duration-300">
-                <Link href={item.single_page_page}>
+                <Link href={`/portfolio/${item.single_page_page}`}>
                     <img
                         src={item.coverImg}
-                        alt={item.title}
+                        alt={item.project_title}
                         className="w-full h-full object-cover"
                     />
                 </Link>
@@ -235,7 +223,7 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({ item, index }) => {
                 transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
             >
                 <h3 className="text-4xl font-semibold text-white mb-2">
-                    <Link href={item.project_link}>{item.project_title}</Link>
+                    <Link href={`/portfolio/${item.project_link}`}>{item.project_title}</Link>
                 </h3>
 
                 <p className="text-sm text-white">

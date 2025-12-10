@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "../Button";
+import Button from '../../frontendComponents/button/Button'
 import img from "../../assets/ServicesImage/earring.jpg";
 import img2 from "../../assets/ServicesImage/baby.webp";
 import img3 from "../../assets/ServicesImage/french.jpg";

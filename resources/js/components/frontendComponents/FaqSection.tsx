@@ -1,8 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useFAQ } from "../GetContextApi/FAQGetContext";
+// import { useFAQ } from "../GetContextApi/FAQGetContext";
+interface FAQItem {
+  q: string;
+  a: string;
+}
 
-const FaqsCard = (props) => {
-    const answerElRef = useRef();
+interface FaqsCardProps {
+  faqsList: FAQItem;
+  idx: number;
+  isOpen: boolean;
+  onClick: (idx: number) => void;
+}
+
+interface FaqSectionProps {
+  categoryName: string;
+}
+
+const FaqsCard: React.FC<FaqsCardProps> = (props) => {
+    const answerElRef = useRef<HTMLDivElement>(null);
     const [answerH, setAnswerH] = useState("0px");
     const { faqsList, idx, isOpen, onClick } = props;
 
@@ -12,12 +27,12 @@ const FaqsCard = (props) => {
 
     useEffect(() => {
         // Update height when open state changes
-        if (isOpen) {
-            const answerElH = answerElRef.current.childNodes[0].offsetHeight;
-            setAnswerH(`${answerElH + 0}px`);
-        } else {
-            setAnswerH("0px");
-        }
+       if (isOpen && answerElRef.current) {
+      const textHeight = answerElRef.current.children[0]?.clientHeight || 0;
+      setAnswerH(`${textHeight}px`);
+    } else {
+      setAnswerH("0px");
+    }
     }, [isOpen]);
 
     return (
@@ -73,101 +88,99 @@ const FaqsCard = (props) => {
     );
 };
 
-// const faqsData = [
-//     {
-//         category: "Frequently Asked Questions ",
-//         content: [
-//             {
-//                 q: "Will my website be mobile-friendly?",
-//                 a: " Yes! We design websites that adjust to all screen sizes, ensuring a smooth user experience. A mobile-friendly site also helps improve search rankings.",
-//             },
-//             {
-//                 q: "How long does it take to build a website?",
-//                 a: " It typically takes 1 to 4 months, depending on the complexity and features required. The process includes planning, design, development, and testing.",
-//             },
-//             {
-//                 q: "What's the difference between a website and a web app?",
-//                 a: "A website provides information, while a web app allows user interaction. Web apps often have advanced features like forms and dashboards.",
-//             },
-//             {
-//                 q: "What programming languages are used in web development?",
-//                 a: " Common languages include HTML, CSS, JavaScript, and Python. The choice depends on the project requirements and functionality needed.",
-//             },
-//             {
-//                 q: "How much does it cost to develop a website?",
-//                 a: "The cost varies based on complexity, features, and design. Simple websites cost less, while custom-built sites are more expensive.",
-//             },
-//         ]
-//     },
-// ];
+const faqsData = [
+    {
+        category: "Frequently Asked Questions ",
+        content: [
+            {
+                q: "Will my website be mobile-friendly?",
+                a: " Yes! We design websites that adjust to all screen sizes, ensuring a smooth user experience. A mobile-friendly site also helps improve search rankings.",
+            },
+            {
+                q: "How long does it take to build a website?",
+                a: " It typically takes 1 to 4 months, depending on the complexity and features required. The process includes planning, design, development, and testing.",
+            },
+            {
+                q: "What's the difference between a website and a web app?",
+                a: "A website provides information, while a web app allows user interaction. Web apps often have advanced features like forms and dashboards.",
+            },
+            {
+                q: "What programming languages are used in web development?",
+                a: " Common languages include HTML, CSS, JavaScript, and Python. The choice depends on the project requirements and functionality needed.",
+            },
+            {
+                q: "How much does it cost to develop a website?",
+                a: "The cost varies based on complexity, features, and design. Simple websites cost less, while custom-built sites are more expensive.",
+            },
+        ]
+    },
+];
 
-const FaqSection = ({categoryName}) => {
-    const [openIndex, setOpenIndex] = useState(null);
-        const { faqData } = useFAQ();
+const FaqSection: React.FC<FaqSectionProps>  = ({categoryName}) => {
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
+//         const { faqData } = useFAQ();
     
 
-    const handleToggle = (idx) => {
+    const handleToggle = (idx: number) => {
         setOpenIndex(openIndex === idx ? null : idx);
 
    };
 
 
-   const filteredFaqs = faqData.filter(
-    (faq) =>
-      faq.Category &&
-      faq.Category.toLowerCase() === categoryName.toLowerCase()
+   const filteredFaqs = faqsData.filter(
+    (faq) => faq.category.toLowerCase() === categoryName.toLowerCase()
   );
 
-  if (filteredFaqs.length === 0) {
-    return <p className="text-center">No FAQs found for {categoryName}.</p>;
-  }
+//   if (filteredFaqs.length === 0) {
+//     return <p className="text-center">No FAQs found for {categoryName}.</p>;
+//   }
 
     return (
-        <section className="faqsec">
-            <div className="container mx-auto max-w-[900px]">
-                <h2 className="text-4xl faqCatHeading font-semibold mb-10 text-center">
-                Frequently Asked Questions
-                </h2>
-                <div className="mt-16">
-                {filteredFaqs.map((faq, idx) => (
-                    <FaqsCard
-                    key={idx}
-                    idx={idx}
-                    faqsList={{ q: faq.name, a: faq.fullDescription }}
-                    isOpen={openIndex === idx}
-                    onClick={handleToggle}
-                    />
-                ))}
-                </div>
-            </div>
-        </section>
-        // <section className="faqsec ">
-        //     <div className="container mx-auto">
-        //         <div className="grid grid-cols-1 gap-y-15 gap-x-15 max-w-[900px] mx-auto">
-        //             {filteredFaqs.faqs.map((item, index) => (
-        //                 <div className="leading-relaxed mt-12" key={index}>
-        //                     <div className="space-y-3 text-center">
-        //                         <h2 className="text-4xl faqCatHeading font-semibold mb-10">
-        //                         Frequently Asked Questions
-        //                         </h2>
-        //                     </div>
-        //                     <div className="mt-16 ">
-        //                         {item.content.map((faq, idx) => (
-        //                             <FaqsCard 
-        //                                 key={idx}
-        //                                 idx={idx} 
-        //                                 faqsList={faq} 
-        //                                 isOpen={openIndex === idx}
-        //                                 onClick={handleToggle}
-                                        
-        //                             />
-        //                         ))}
-        //                     </div>
-        //                 </div>
-        //             ))}
+        // <section className="faqsec">
+        //     <div className="container mx-auto max-w-[900px]">
+        //         <h2 className="text-4xl faqCatHeading font-semibold mb-10 text-center">
+        //         Frequently Asked Questions
+        //         </h2>
+        //         <div className="mt-16">
+        //         {filteredFaqs.map((faq, idx) => (
+        //             <FaqsCard
+        //             key={idx}
+        //             idx={idx}
+        //             faqsList={{ q: faq.name, a: faq.fullDescription }}
+        //             isOpen={openIndex === idx}
+        //             onClick={handleToggle}
+        //             />
+        //         ))}
         //         </div>
         //     </div>
         // </section>
+        <section className="faqsec ">
+            <div className="container mx-auto">
+                <div className="grid grid-cols-1 gap-y-15 gap-x-15 max-w-[900px] mx-auto">
+                    {filteredFaqs.map((item, index) => (
+                        <div className="leading-relaxed mt-12" key={index}>
+                            <div className="space-y-3 text-center">
+                                <h2 className="text-4xl faqCatHeading font-semibold mb-10">
+                                Frequently Asked Questions
+                                </h2>
+                            </div>
+                            <div className="mt-16 ">
+                                {item.content.map((faq, idx) => (
+                                    <FaqsCard 
+                                        key={idx}
+                                        idx={idx} 
+                                        faqsList={faq} 
+                                        isOpen={openIndex === idx}
+                                        onClick={handleToggle}
+                                        
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
     );
 };
 

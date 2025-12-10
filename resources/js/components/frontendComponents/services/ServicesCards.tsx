@@ -1,47 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import hover_img from '../../assets/service-hover.jpg';
+// import hover_img from '../../assets/service-hover.jpg';
 import './ServicesCards.css';
 
+interface SubService {
+    services_heading: string;
+    services_desc?: string;
+    all_services: Array<{
+        service_name: string;
+        service_desc: string;
+        hover_image: string;
+    }>;
+}
 
-const serviceCardsData = [
-    {
-        service_title: 'Branding',
-        service_desc:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam ut laborum architecto provident tempore recusandae at exercitationem! Praesentium blanditiis laborum quas repellendus. Ab, sed quidem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, id.',
-        hover_image: hover_img,
-    },
-    {
-        service_title: 'Logo Design',
-        service_desc:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam ut laborum architecto provident tempore recusandae at exercitationem! Praesentium blanditiis laborum quas repellendus. Ab, sed quidem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, id.',
-        hover_image: hover_img,
-    },
-    {
-        service_title: 'UI/UX Design',
-        service_desc:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam ut laborum architecto provident tempore recusandae at exercitationem! Praesentium blanditiis laborum quas repellendus. Ab, sed quidem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, id.',
-        hover_image: hover_img,
-    },
-    {
-        service_title: 'Packaging Design',
-        service_desc:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam ut laborum architecto provident tempore recusandae at exercitationem! Praesentium blanditiis laborum quas repellendus. Ab, sed quidem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, id.',
-        hover_image: hover_img,
-    },
-    {
-        service_title: 'Print Design',
-        service_desc:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam ut laborum architecto provident tempore recusandae at exercitationem! Praesentium blanditiis laborum quas repellendus. Ab, sed quidem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, id.',
-        hover_image: hover_img,
-    },
+interface ServicesCardsProps {
+    secData: {
+        sub_service: SubService[];
+    };
+}
 
-];
-
-
-const ServicesCards = ({ secData }) => {
+const ServicesCards:React.FC<ServicesCardsProps> = ({ secData }) => {
 
     const [imgPosition, setImgPosition] = useState({ x: 0, y: 0 });
-    const handleMouseMove = (event) => {
+    const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
         const cardRect = event.currentTarget.getBoundingClientRect();
         setImgPosition({
             x: event.clientX - cardRect.left,

@@ -3,7 +3,6 @@ import PortfolioAnimatedCards from '../../components/frontendComponents/portfoli
 
 import useLenis from '../../hooks/useLenis';
 import HeroCommon from '../../components/frontendComponents/herocommon/HeroCommon' ;
-import SeoTags from '../../components/frontendComponents/seoTags/SeoTags';
 import MasterLayout from '@/layouts/frontendLayouts/MasterLayouts';
 import { Head } from '@inertiajs/react';
 
