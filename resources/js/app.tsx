@@ -1,4 +1,5 @@
 import '../css/app.css';
+import '../css/dashboard.css';
 import React, { ReactNode } from 'react';
 
 import { createInertiaApp } from '@inertiajs/react';
@@ -17,6 +18,7 @@ interface BgAnimationProps {
 }
 
 const BgAnimation: React.FC<BgAnimationProps> = ({ children }) => (
+    
     <>
         <div className="fixed pointer-events-none z-[-1] opacity-[.3] bg-anim-wrapper h-full overflow-hidden w-full">
             <div id="bg-anim" className="bg-animation w-full h-full" >
