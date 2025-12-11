@@ -7,7 +7,7 @@ use App\Http\Controllers\BlogController;
 
 Route::get('/', function () {
     return Inertia::render('frontend/Home');
-})->name('/');
+})->name('home');
 
 Route::get('/about', function () {
     return Inertia::render('frontend/About');
@@ -23,7 +23,13 @@ Route::inertia('/services/{slug}', 'frontend/SingleServices');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::get('/blog/{slug}', [BlogController::class, 'single'])->name('blog.single');
 
+Route::get('/aislogin', function () {
+    return Inertia::render('auth/login');
+})->name('login');
 
+Route::get('/login', function () {
+    return redirect('/');
+})->name('login.redirect');
 
 
 Route::get('/portfolio', function () {
@@ -47,10 +53,5 @@ Route::get('/contact-us', function () {
 //     ]);
 // })->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-});
 
-require __DIR__.'/settings.php';
+require __DIR__.'/admin.php';

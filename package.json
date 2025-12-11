@@ -56,6 +56,8 @@
         "concurrently": "^9.0.1",
         "framer-motion": "^12.23.25",
         "globals": "^15.14.0",
+        "gridjs": "^6.2.0",
+        "gridjs-react": "^6.1.1",
         "input-otp": "^1.4.2",
         "laravel-vite-plugin": "^2.0",
         "lucide-react": "^0.475.0",
