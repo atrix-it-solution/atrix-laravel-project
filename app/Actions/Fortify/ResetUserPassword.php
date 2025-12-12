@@ -26,3 +26,4 @@ class ResetUserPassword implements ResetsUserPasswords
         ])->save();
     }
 }
+ 
