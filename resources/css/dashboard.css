@@ -1495,3 +1495,7 @@
     --bs-gutter-y: 4.5rem;
   }
 }
+
+.custombordercolor{
+  border-color: var(--color-zinc-200);
+}

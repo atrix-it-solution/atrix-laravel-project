@@ -6,24 +6,23 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-
-class DashboardBlogController extends Controller
+class TagsBlogController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     { 
-        return Inertia::render('dashboard/blog/all-blog');
+        return Inertia::render('dashboard/blog/tagsBlog');
         
     }
 
     /**
      * Show the form for creating a new resource.
-     */ 
+     */
     public function create()
     {
-        return Inertia::render('dashboard/blog/create-edit-blog');
+        return Inertia::render('dashboard/blog/tagsBlog');
     }
 
     /**
@@ -58,11 +57,4 @@ class DashboardBlogController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }
