@@ -19,7 +19,7 @@ import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: '/dashboard',
         icon: LayoutGrid,
     },
     {
@@ -30,12 +30,49 @@ const mainNavItems: NavItem[] = [
             {
                 title: 'All Blog',
                 href: "/dashboard/allblog",
-                icon: FileText,
+                // icon: FileText,
             },
             {
                 title: 'Create Blog',
                 href: "/dashboard/create-blog",
-                icon: Plus,
+                // icon: Plus,
+            },
+            {
+                title: 'Categories',
+                href: "/dashboard/categories-blog",
+                // icon: Plus,
+            },
+            {
+                title: 'Tags',
+                href: "/dashboard/tags-blog",
+                // icon: Plus,
+            },
+        ]
+    },
+    {
+        title: 'Portfolio',
+        href: "#",
+        icon: FileText,
+        items: [
+            {
+                title: 'All Portfolio',
+                href: "/dashboard/allportfolio",
+                // icon: FileText,
+            },
+            {
+                title: 'Create Portfolio',
+                href: "/dashboard/create-portfolio",
+                // icon: Plus,
+            },
+            {
+                title: 'Categories',
+                href: "/dashboard/categories-portfolio",
+                // icon: Plus,
+            },
+            {
+                title: 'Tags',
+                href: "/dashboard/tags-portfolio",
+                // icon: Plus,
             },
         ]
     },

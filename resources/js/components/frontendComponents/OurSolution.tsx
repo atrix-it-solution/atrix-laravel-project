@@ -184,7 +184,7 @@ const OurSolution = () => {
                 {blurbContent.map((item, index) => (
                   <div
                     key={index}
-                    className="blurb-item pb-20 bg-[var(--darkblack)] pl-1 pt-1 sticky top-20"
+                    className="blurb-item pb-20 bg-[var(--darkblack)] pl-1 pt-7 sticky top-20"
                   >
                     <img
                       src={item.image}

@@ -62,7 +62,7 @@ const LogoSlider: React.FC<LogoSliderProps> = ({ className })=> {
 //   }, [BACKEND_URL]);
 
   return (
-    <div className={`container mx-auto max-w-full ${className || ""}`}>
+    <div className={`container-fluid mx-auto max-w-full ${className || ""}`}>
       <h6 className='flex justify-center items-center  mb-5 md:mb-10 font-bold text-(--white) px-5 text-center'>Over 1K+ Software Businesses Growing with Atrix IT Solutions</h6>
 
       <div className='marquee-2'>
