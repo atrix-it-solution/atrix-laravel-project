@@ -23,7 +23,9 @@ class DashboardBlogController extends Controller
      */ 
     public function create()
     {
-        return Inertia::render('dashboard/blog/create-edit-blog');
+        return Inertia::render('dashboard/blog/create-edit-blog', [
+            'needsCKEditor' => true,
+        ]);
     }
 
     /**

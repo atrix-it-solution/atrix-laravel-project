@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { CreateEditForm } from '@/components/common/create-edit-form';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const breadcrumbs = [
     {
@@ -36,16 +39,19 @@ const blogTags = [
 ];
 
 export default function CreateEditBlog() {
+ 
+    const [authorName, setAuthorName] = useState('');
+    const [authorDescription, setAuthorDescription] = useState('');
+
     const handleSubmit = (formData: FormData) => {
-        // Handle form submission for blog
-        console.log('Blog form data:', Object.fromEntries(formData.entries()));
+      
+        formData.append('author-name', authorName);
+        formData.append('author-description', authorDescription);
         
-        // Show success message
-        const status = formData.get('status');
+         console.log('Blog form data:', Object.fromEntries(formData.entries()));
+        
+         const status = formData.get('status');
         alert(`Blog post ${status === 'draft' ? 'saved as draft' : 'published successfully'}!`);
-        
-        // In a real app, you would send this to your API
-        // Example: axios.post('/api/blogs', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
     };
 
     return (
@@ -56,7 +62,32 @@ export default function CreateEditBlog() {
             initialCategories={blogCategories}
             initialTags={blogTags}
             onSubmit={handleSubmit}
-        />
+        >
+            {/* Portfolio-specific fields */}
+            <div className="space-y-4">
+                <div>
+                    <Label htmlFor="author-name">Author Name</Label>
+                    <Input
+                        id="author-name"
+                        value={authorName}
+                        onChange={(e) => setAuthorName(e.target.value)}
+                        placeholder="Enter Author Name"
+                    />
+                </div>
+
+                
+                <div>
+                    <Label htmlFor="author-description">Author Description</Label>
+                    <Textarea
+                        id="author-description"
+                        value={authorDescription}
+                        onChange={(e) => setAuthorDescription(e.target.value)}
+                        placeholder="Enter Author Description"
+                        rows={6}
+                    />
+                </div>
+            </div>
+        </CreateEditForm>  
     );
 }
 

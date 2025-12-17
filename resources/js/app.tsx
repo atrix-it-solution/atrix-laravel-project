@@ -1,5 +1,5 @@
 import '../css/app.css';
-import '../css/dashboard.css';
+
 import React, { ReactNode } from 'react';
 
 import { createInertiaApp } from '@inertiajs/react';
