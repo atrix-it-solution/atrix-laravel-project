@@ -56,10 +56,62 @@ const Media: React.FC<MediaProps> = ({
   const [uploadedFilesCount, setUploadedFilesCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
+  // useEffect(() => {
+  //   console.log('CSRF Token Debug:');
+  //   console.log('Meta token:', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'));
+  //   console.log('All cookies:', document.cookie);
+    
+  //   // Check all cookies
+  //   document.cookie.split(';').forEach(cookie => {
+  //     console.log('Cookie:', cookie.trim());
+  //   });
+  // }, []);
+
+
+  const getCsrfToken = (): string => {
+    // For Laravel, we should use the XSRF-TOKEN from cookies, NOT the meta tag
+    // because Laravel encrypts the cookie token
+    
+    // Get XSRF-TOKEN from cookies (Laravel's encrypted version)
+    const xsrfToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('XSRF-TOKEN='))
+      ?.split('=')[1];
+      
+    if (xsrfToken) {
+      // Decode the URI component
+      const decodedToken = decodeURIComponent(xsrfToken);
+      // console.log('Using XSRF-TOKEN from cookie:', decodedToken);
+      return decodedToken;
+    }
+    
+    // Fallback to meta tag if no cookie
+    const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (metaToken) {
+      // console.log('Using CSRF token from meta tag:', metaToken);
+      return metaToken;
+    }
+    
+    console.warn('CSRF token not found');
+    return '';
+  };
+
   // Fetch media files using fetch API
   const fetchMedia = async () => {
     setLoading(true);
     try {
+
+      const csrfToken = getCsrfToken();
+
+      const headers: HeadersInit = {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      };
+    
+      if (csrfToken) {
+      headers['X-XSRF-TOKEN'] = csrfToken;
+    }
+
       const response = await fetch('/api/media', {
         headers: {
           'Accept': 'application/json',
@@ -102,76 +154,92 @@ const Media: React.FC<MediaProps> = ({
 
   // Single file upload
   const handleUpload = async (file: File) => {
-    if (!file) return;
+  if (!file) return;
+  
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('is_public', '1');
+  
+  setUploading(true);
+  setUploadProgress(0);
+  
+  try {
+    const csrfToken = getCsrfToken();
     
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('is_public', '1');
+    // Create headers object
+   const headers: HeadersInit = {
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json',
+    };
     
-    setUploading(true);
-    setUploadProgress(0);
-    
-    try {
-      // Get CSRF token from meta tag
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      
-      const response = await fetch('/api/media', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': csrfToken || '',
-        },
-        credentials: 'include'
-      });
-      
-      // Check if response is JSON
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.message || 'Upload failed');
-        }
-        
-        if (data.success) {
-          const newFileData = data.data;
-          const newFile: FileItem = {
-            id: newFileData.id,
-            file: newFileData.url,
-            thumbnailUrl: newFileData.thumbnailUrl,
-            type: newFileData.type,
-            name: newFileData.name,
-            fileName: newFileData.fileName,
-            size: newFileData.size,
-            formattedSize: newFileData.formattedSize,
-            dimensionsString: newFileData.dimensionsString,
-            createdAt: newFileData.createdAt,
-            isImage: newFileData.isImage
-          };
-          
-          setAllFiles(prev => [newFile, ...prev]);
-          setSelectedFileId(newFile.id);
-          setSelectedFileUrl(newFile.file);
-          
-          toast.success("File uploaded successfully!");
-          setShowUploadSection(false);
-          setShowAllFilesSection(true);
-        }
-      } else {
-        // If not JSON, it might be a CSRF error page
-        const text = await response.text();
-        throw new Error('CSRF token validation failed or server error');
-      }
-    } catch (error: any) {
-      console.error('Upload error:', error);
-      toast.error(error.message || 'Failed to upload file');
-    } finally {
-      setUploading(false);
-      setUploadProgress(0);
-      setFilesToUpload([]);
+    // Only add CSRF token if we have one
+      if (csrfToken) {
+      headers['X-XSRF-TOKEN'] = csrfToken;
     }
-  };
+    
+    // For Laravel Sanctum, you might need the Sanctum header
+    if (window.location.hostname !== 'localhost') {
+      headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+    }
+    
+    const response = await fetch('/api/media', {
+      method: 'POST',
+      body: formData,
+      headers,
+      credentials: 'include' // This sends cookies
+    });
+    
+    // Check response status
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Upload failed: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      const newFileData = data.data;
+      const newFile: FileItem = {
+        id: newFileData.id,
+        file: newFileData.url,
+        thumbnailUrl: newFileData.thumbnailUrl,
+        type: newFileData.type,
+        name: newFileData.name,
+        fileName: newFileData.fileName,
+        size: newFileData.size,
+        formattedSize: newFileData.formattedSize,
+        dimensionsString: newFileData.dimensionsString,
+        createdAt: newFileData.createdAt,
+        isImage: newFileData.isImage
+      };
+      
+      setAllFiles(prev => [newFile, ...prev]);
+      setSelectedFileId(newFile.id);
+      setSelectedFileUrl(newFile.file);
+      
+      toast.success("File uploaded successfully!");
+      setShowUploadSection(false);
+      setShowAllFilesSection(true);
+    } else {
+      throw new Error(data.message || 'Upload failed');
+    }
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    
+    // Provide more specific error messages
+    if (error.message.includes('CSRF')) {
+      toast.error('Security token expired. Please refresh the page and try again.');
+    } else if (error.message.includes('419')) {
+      toast.error('Session expired. Please refresh the page.');
+    } else {
+      toast.error(error.message || 'Failed to upload file');
+    }
+  } finally {
+    setUploading(false);
+    setUploadProgress(0);
+    setFilesToUpload([]);
+  }
+};
 
   // Multiple files upload
   const handleMultipleUpload = async (files: File[]) => {
@@ -538,72 +606,74 @@ const Media: React.FC<MediaProps> = ({
             </div>
 
             {/* Content */}
-            <div className="min-h-[400px]">
+            <div className="min-h-[500px]">
               {/* Upload Section */}
               {showUploadSection && (
-                <div className="space-y-4">
+                
+                <div className="py-26  ">
                   {/* File upload area */}
-                  <div
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-(--blue) transition-colors cursor-pointer w-full"
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                    onClick={() => document.getElementById('file-upload')?.click()}
-                  >
-                    <input
-                      id="file-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileInputChange}
-                      className="hidden"
-                      disabled={uploading}
-                      multiple
-                    />
-                    <div className="space-y-4">
-                      {uploading ? (
-                        <div className="space-y-4">
-                          <div className="text-lg font-semibold text-gray-700">
-                            {filesToUpload.length > 1 
-                              ? `Uploading ${filesToUpload.length} files...`
-                              : `Uploading ${filesToUpload[0]?.name}...`}
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3">
-                            <div 
-                              className="bg-(--blue) h-3 rounded-full transition-all duration-300"
-                              style={{ width: `${uploadProgress}%` }}
-                            ></div>
-                          </div>
-                          <p className="text-sm text-gray-500">
-                            {uploadProgress}% complete
-                            {uploadedFilesCount > 0 && ` • ${uploadedFilesCount} files uploaded`}
-                          </p>
-                          <Button
-                            onClick={handleCancelUpload}
-                            variant="outline"
-                            size="sm"
-                            className="mt-2"
-                          >
-                            Cancel Upload
-                          </Button>
-                        </div>
-                      ) : (
-                        <>
-                          <FaUpload className="text-4xl text-gray-400 mx-auto" />
-                          <div>
-                            <p className="text-lg font-semibold text-gray-700">
-                              Click to upload or drag & drop
+                  <div className="flex justify-center ">
+                    <div
+                      className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-(--blue) transition-colors cursor-pointer w-full max-w-2xs"
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                    >
+                      <input
+                        id="file-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileInputChange}
+                        className="hidden"
+                        disabled={uploading}
+                        multiple
+                      />
+                      <div className="space-y-4">
+                        {uploading ? (
+                          <div className="space-y-4">
+                            <div className="text-lg font-semibold text-gray-700">
+                              {filesToUpload.length > 1 
+                                ? `Uploading ${filesToUpload.length} files...`
+                                : `Uploading ${filesToUpload[0]?.name}...`}
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-3">
+                              <div 
+                                className="bg-(--blue) h-3 rounded-full transition-all duration-300"
+                                style={{ width: `${uploadProgress}%` }}
+                              ></div>
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              {uploadProgress}% complete
+                              {uploadedFilesCount > 0 && ` • ${uploadedFilesCount} files uploaded`}
                             </p>
-                            <p className="text-sm text-gray-500 mt-1">
-                              PNG, JPG, GIF up to 10MB each
-                            </p>
-                            <p className="text-xs text-gray-400 mt-2">
-                              Supports multiple file selection
-                            </p>
+                            <Button
+                              onClick={handleCancelUpload}
+                              variant="outline"
+                              size="sm"
+                              className="mt-2"
+                            >
+                              Cancel Upload
+                            </Button>
                           </div>
-                        </>
-                      )}
+                        ) : (
+                          <>
+                            <FaUpload className="text-4xl text-gray-400 mx-auto" />
+                            <div>
+                              <p className="text-lg font-semibold text-gray-700">
+                                Click to upload or drag & drop
+                              </p>
+                              <p className="text-sm text-gray-500 mt-1">
+                                PNG, JPG, GIF up to 10MB each
+                              </p>
+                              <p className="text-xs text-gray-400 mt-2">
+                                Supports multiple file selection
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-
                   {/* Files to upload queue */}
                   {filesToUpload.length > 0 && !uploading && (
                     <div className="border rounded-lg p-4">

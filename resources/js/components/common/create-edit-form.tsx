@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -25,16 +23,16 @@ export interface CreateEditFormProps {
     type: 'blog' | 'portfolio';
     initialCategories: CategoryOption[];
     initialTags: TagOption[];
-    onSubmit: (data: FormData) => void;
+    onSubmit: (data: any) => void;
     children?: React.ReactNode;
     initialData?: {
         title?: string;
         slug?: string;
         description?: string;
         content?: string;
-        featured_image?: string;
-        featured_image_url?: string;
-        status?: 'draft' | 'published';
+        featured_image?: string | null;
+        featured_image_url?: string | null;
+        status?: 'draft' | 'published' | 'archived';
         categories?: number[];
         tags?: number[];
     };
@@ -50,7 +48,7 @@ export function CreateEditForm({
     children,
     initialData = {}
 }: CreateEditFormProps) {
-    // Form state - consolidated into one object
+    // Form state
     const [formData, setFormData] = useState({
         title: initialData.title || '',
         slug: initialData.slug || '',
@@ -58,15 +56,10 @@ export function CreateEditForm({
         content: initialData.content || '',
         featured_image: initialData.featured_image || null,
         featured_image_url: initialData.featured_image_url || '',
-        status: initialData.status || 'draft' as 'draft' | 'published',
+        status: initialData.status || 'draft' as 'draft' | 'published' | 'archived',
         categories: initialData.categories || [] as number[],
         tags: initialData.tags || [] as number[],
     });
-
-    // Additional state for UI
-    const [imagePreview, setImagePreview] = useState<string>(initialData.featured_image_url || '');
-    const [newTag, setNewTag] = useState('');
-    const [allTags, setAllTags] = useState<TagOption[]>(initialTags);
 
     // Update form data
     const updateFormData = (field: string, value: any) => {
@@ -89,130 +82,67 @@ export function CreateEditForm({
     // Handle title change and auto-generate slug
     const handleTitleChange = (value: string) => {
         updateFormData('title', value);
-        if (!formData.slug) {
-            updateFormData('slug', generateSlug(value));
+        if (!formData.slug || value !== initialData.title) {
+            const slug = generateSlug(value);
+            updateFormData('slug', slug);
         }
-    };
-
-    // Handle featured image upload (for direct file upload)
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-            // Store file object if you want to handle file upload directly
-            // updateFormData('featured_image_file', file);
-        }
-    };
-
-    // Remove featured image
-    const removeFeaturedImage = () => {
-        updateFormData('featured_image', null);
-        setImagePreview('');
-    };
-
-    // Handle category toggle
-    const handleCategoryToggle = (id: number) => {
-        const newCategories = formData.categories.includes(id)
-            ? formData.categories.filter(catId => catId !== id)
-            : [...formData.categories, id];
-        updateFormData('categories', newCategories);
-    };
-
-    // Handle tag toggle
-    const handleTagToggle = (tagId: number) => {
-        const newTags = formData.tags.includes(tagId)
-            ? formData.tags.filter(id => id !== tagId)
-            : [...formData.tags, tagId];
-        updateFormData('tags', newTags);
-    };
-
-    // Handle adding new tag
-    const handleAddNewTag = () => {
-        const tagName = newTag.trim();
-        if (!tagName) return;
-
-        // Prevent duplicate tags
-        const exists = allTags.some(
-            tag => tag.name.toLowerCase() === tagName.toLowerCase()
-        );
-
-        if (exists) {
-            setNewTag('');
-            return;
-        }
-
-        const newTagObj = {
-            id: Date.now(), // temporary unique ID
-            name: tagName,
-        };
-
-        setAllTags(prev => [...prev, newTagObj]);
-        updateFormData('tags', [...formData.tags, newTagObj.id]);
-        setNewTag('');
     };
 
     // Handle form submission
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Prepare form data
-        const submitFormData = new FormData();
-        submitFormData.append('title', formData.title);
-        submitFormData.append('slug', formData.slug);
-        submitFormData.append('description', formData.description);
-        submitFormData.append('content', formData.content);
-        submitFormData.append('type', type);
-        submitFormData.append('status', formData.status);
+        // Validate required fields
+        if (!formData.title.trim()) {
+            alert('Please enter a title');
+            return;
+        }
         
-        formData.categories.forEach(id => {
-            submitFormData.append('categories[]', id.toString());
-        });
-        
-        formData.tags.forEach(tagId => {
-            submitFormData.append('tags[]', tagId.toString());
-        });
-        
-        // If you have a file upload, add it
-        // if (formData.featured_image_file) {
-        //     submitFormData.append('featured_image', formData.featured_image_file);
-        // } else if (formData.featured_image) {
-        //     submitFormData.append('featured_image_id', formData.featured_image);
-        // }
-
-        // For now, just pass the featured image ID
-        if (formData.featured_image) {
-            submitFormData.append('featured_image', formData.featured_image);
+        if (!formData.content.trim()) {
+            alert('Please enter content');
+            return;
         }
 
+        // Prepare the data object
+        const submitData = {
+            ...formData,
+            // Ensure slug is set
+            slug: formData.slug || generateSlug(formData.title),
+        };
+
         // Call the onSubmit prop
-        onSubmit(submitFormData);
+        onSubmit(submitData);
     };
 
     const getItemTypeLabel = () => {
         return type === 'blog' ? 'Blog Post' : 'Portfolio Item';
     };
 
-     const handleFileSelect = (fileId: string | null, fileUrl?: string) => {
+    const handleFileSelect = (fileId: string | null, fileUrl?: string) => {
         updateFormData('featured_image', fileId);
         if (fileUrl) {
             updateFormData('featured_image_url', fileUrl);
-            setImagePreview(fileUrl);
         } else {
             updateFormData('featured_image_url', '');
-            setImagePreview('');
         }
     };
 
-    // When initialData changes, update image preview
+    // When initialData changes, update form
     useEffect(() => {
-        if (initialData.featured_image_url) {
-            setImagePreview(initialData.featured_image_url);
+        if (initialData) {
+            setFormData({
+                title: initialData.title || '',
+                slug: initialData.slug || '',
+                description: initialData.description || '',
+                content: initialData.content || '',
+                featured_image: initialData.featured_image || null,
+                featured_image_url: initialData.featured_image_url || '',
+                status: initialData.status || 'draft',
+                categories: initialData.categories || [],
+                tags: initialData.tags || [],
+            });
         }
-    }, [initialData.featured_image_url]);
+    }, [initialData]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -245,12 +175,13 @@ export function CreateEditForm({
 
                                         {/* Slug */}
                                         <div>
-                                            <Label htmlFor="slug">Slug</Label>
+                                            <Label htmlFor="slug">Slug *</Label>
                                             <Input
                                                 id="slug"
                                                 value={formData.slug}
                                                 onChange={(e) => updateFormData('slug', e.target.value)}
                                                 placeholder={`${type}-item-url-slug`}
+                                                required
                                             />
                                             <p className="text-sm text-gray-500 mt-1">
                                                 URL-friendly version of the title
@@ -259,21 +190,29 @@ export function CreateEditForm({
 
                                         {/* Description */}
                                         <div>
-                                            <Label htmlFor="description">Description *</Label>
+                                            <Label htmlFor="description">Short Description</Label>
+                                            <Textarea
+                                                id="description"
+                                                value={formData.description}
+                                                onChange={(e) => updateFormData('description', e.target.value)}
+                                                placeholder={`Enter a short description of your ${getItemTypeLabel().toLowerCase()}`}
+                                                rows={3}
+                                            />
+                                        </div>
+
+                                        {/* Content Editor */}
+                                        <div>
+                                            <Label htmlFor="content">Content *</Label>
                                             <RichTextEditor
                                                 value={formData.content}
                                                 onChange={(content) => updateFormData('content', content)}
                                                 placeholder={`Write your ${getItemTypeLabel().toLowerCase()} content here...`}
                                                 label="Content"
-                                                
-                                                required
                                             />
                                         </div>
 
-                                        {/* Content Editor - Can be customized per type */}
+                                        {/* Additional type-specific fields (passed as children) */}
                                         {children}
-
-                                        {/* Additional fields can be added here */}
                                     </div>
 
                                     {/* Right column - Sidebar */}
@@ -285,31 +224,56 @@ export function CreateEditForm({
                                             submitLabel={`${formData.status === 'published' ? 'Publish' : 'Save Draft'} ${getItemTypeLabel()}`}
                                         />
                                         
-                                        {/* Media component for selecting from existing files */}
-                                        <Media
-                                            onFileSelect={handleFileSelect} // Use the updated handler
-                                            selectedFile={formData.featured_image}
-                                            title="Featured Image"
-                                            setName="Set Featured Image"
-                                            Componenttitle="Featured Image"
-                                            h1="Select Featured Image"
-                                            SetButtonName="Use as Featured Image"
-                                        />
+                                        {/* Featured Image */}
+                                        <div className="card">
+                                            <div className="card-header">
+                                                <h4 className="card-title">Featured Image</h4>
+                                            </div>
+                                            <div className="card-body">
+                                                <Media
+                                                    onFileSelect={handleFileSelect}
+                                                    selectedFile={formData.featured_image}
+                                                    title="Featured Image"
+                                                    setName="Set Featured Image"
+                                                    Componenttitle="Featured Image"
+                                                    h1="Select Featured Image"
+                                                    SetButtonName="Use as Featured Image"
+                                                />
+                                                {formData.featured_image_url && (
+                                                    <div className="mt-3">
+                                                        <img 
+                                                            src={formData.featured_image_url} 
+                                                            alt="Featured" 
+                                                            className="w-full h-32 object-cover rounded"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
 
+                                        {/* Categories */}
                                         <CategoriesSelector
                                             categories={initialCategories}
                                             selectedCategories={formData.categories}
-                                            onCategoryToggle={handleCategoryToggle}
+                                            onCategoryToggle={(id) => {
+                                                const newCategories = formData.categories.includes(id)
+                                                    ? formData.categories.filter(catId => catId !== id)
+                                                    : [...formData.categories, id];
+                                                updateFormData('categories', newCategories);
+                                            }}
                                             title={type === 'blog' ? 'Blog Categories' : 'Portfolio Categories'}
                                         />
 
+                                        {/* Tags */}
                                         <TagsSelector
-                                            allTags={allTags}
+                                            allTags={initialTags}
                                             selectedTags={formData.tags}
-                                            onTagToggle={handleTagToggle}
-                                            onAddTag={handleAddNewTag}
-                                            newTag={newTag}
-                                            onNewTagChange={setNewTag}
+                                            onTagToggle={(id) => {
+                                                const newTags = formData.tags.includes(id)
+                                                    ? formData.tags.filter(tagId => tagId !== id)
+                                                    : [...formData.tags, id];
+                                                updateFormData('tags', newTags);
+                                            }}
                                             title={type === 'blog' ? 'Blog Tags' : 'Portfolio Tags'}
                                         />
                                     </div>
