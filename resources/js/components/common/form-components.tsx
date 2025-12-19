@@ -240,10 +240,11 @@ export function PublishCard({
                     <div className="flex gap-2">
                         
                         <Button
+                        
                             type="button"
                             variant={status === 'published' ? 'default' : 'outline'}
                             size="sm"
-                            className="flex-1"
+                            className="flex-1 bg-(--blue) hover:bg-(--blue) cursor-pointer"
                             onClick={() => onStatusChange('published')}
                         >
                             Publish

@@ -1499,3 +1499,66 @@
 .custombordercolor{
   border-color: var(--color-zinc-200);
 }
+
+
+
+/* In your global CSS file */
+.ck-editor__editable {
+    min-height: 350px !important;
+    height: 350px !important;
+    color: black !important;
+    font-family: inherit !important;
+    line-height: 1.6 !important;
+}
+
+/* Fix for unordered lists */
+.ck-editor__editable ul,
+.ck-editor__editable ol {
+    margin-left: 1.5em !important;
+    padding-left: 0 !important;
+}
+
+.ck-editor__editable ul {
+    list-style-type: disc !important;
+}
+
+.ck-editor__editable ul ul {
+    list-style-type: circle !important;
+}
+
+.ck-editor__editable ul ul ul {
+    list-style-type: square !important;
+}
+
+/* For ordered lists */
+.ck-editor__editable ol {
+    list-style-type: decimal !important;
+}
+
+.ck-editor__editable ol ol {
+    list-style-type: lower-alpha !important;
+}
+
+.ck-editor__editable ol ol ol {
+    list-style-type: lower-roman !important;
+}
+
+/* List items */
+.ck-editor__editable li {
+    margin-bottom: 0.25em !important;
+    padding-left: 0.25em !important;
+}
+
+/* Nested list indentation */
+.ck-editor__editable ul ul,
+.ck-editor__editable ol ol,
+.ck-editor__editable ul ol,
+.ck-editor__editable ol ul {
+    margin-left: 1.5em !important;
+    margin-top: 0.25em !important;
+    margin-bottom: 0.25em !important;
+}
+
+
+
+  

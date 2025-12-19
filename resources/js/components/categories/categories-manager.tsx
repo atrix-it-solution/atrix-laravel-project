@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
     Table, 
     TableBody, 
@@ -17,7 +17,8 @@ import {
     ChevronUp,
     ChevronDown,
     Save,
-    X
+    X,
+    Plus
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -46,8 +47,14 @@ interface CategoriesManagerProps {
     title: string;
     breadcrumbs: BreadcrumbItem[];
     itemType: 'blog' | 'portfolio' | 'generic';
-    initialCategories?: CategoryItem[];
-    onCategoriesChange?: (categories: CategoryItem[]) => void;
+    initialCategories: CategoryItem[];
+    editingCategory?: CategoryItem | null;
+    parentCategories?: CategoryItem[];
+    allCategories?: CategoryItem[];
+    onSave?: (data: any) => void;
+    onDelete?: (id: number) => void;
+    onEdit?: (id: number) => void;
+    onCancelEdit?: () => void;
 }
 
 export type BreadcrumbItem = {
@@ -63,8 +70,16 @@ export function CategoriesManager({
     breadcrumbs, 
     itemType = 'generic',
     initialCategories = [],
-    onCategoriesChange 
+    editingCategory = null,
+    parentCategories = [],
+    allCategories = [],
+    onSave,
+    onDelete,
+    onEdit,
+    onCancelEdit
 }: CategoriesManagerProps) {
+
+
     // Form state
     const [name, setName] = useState('');
     const [slug, setSlug] = useState('');
@@ -80,6 +95,30 @@ export function CategoriesManager({
     // Categories data
     const [categories, setCategories] = useState<CategoryItem[]>(initialCategories);
 
+    // Update categories when props change
+    useEffect(() => {
+        setCategories(initialCategories);
+    }, [initialCategories]);
+
+    // Set form for editing
+    useEffect(() => {
+       
+        
+        if (editingCategory && editingCategory.id) {
+            setName(editingCategory.name || '');
+            setSlug(editingCategory.slug || '');
+            setDescription(editingCategory.description || '');
+            // Safely set parentId
+            const pid = editingCategory.parentId;
+            
+            setParentId(pid !== null && pid !== undefined ? String(pid) : 'none');
+            setEditingId(editingCategory.id);
+        } else {
+            
+            resetForm();
+        }
+    }, [editingCategory]);
+
     // Generate slug from name
     const generateSlug = (name: string) => {
         return name
@@ -93,7 +132,7 @@ export function CategoriesManager({
     // Handle name change and auto-generate slug
     const handleNameChange = (value: string) => {
         setName(value);
-        if (!slug || editingId === null) {
+        if (!slug || !editingId) {
             setSlug(generateSlug(value));
         }
     };
@@ -101,48 +140,25 @@ export function CategoriesManager({
     // Handle form submission
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+       
         
-        if (!name || !description) {
-            alert('Please fill in all required fields');
+        if (!name.trim()) {
+            alert('Please enter a category name');
             return;
         }
 
-        if (editingId) {
-            // Update existing category
-            const updatedCategories = categories.map(cat => 
-                cat.id === editingId 
-                    ? {
-                        ...cat,
-                        name,
-                        slug,
-                        description,
-                        parentId: parentId !== 'none' ? parseInt(parentId) : null,
-                        parentName: parentId !== 'none' ? categories.find(c => c.id === parseInt(parentId))?.name : undefined
-                    }
-                    : cat
-            );
-            setCategories(updatedCategories);
-            onCategoriesChange?.(updatedCategories);
-            setEditingId(null);
-        } else {
-            // Add new category
-            const newCategory: CategoryItem = {
-                id: categories.length + 1,
-                name,
-                slug,
-                description,
-                parentId: parentId !== 'none' ? parseInt(parentId) : null,
-                itemCount: 0,
-                createdAt: new Date().toISOString().split('T')[0],
-                parentName: parentId !== 'none' ? categories.find(c => c.id === parseInt(parentId))?.name : undefined
-            };
-            const updatedCategories = [...categories, newCategory];
-            setCategories(updatedCategories);
-            onCategoriesChange?.(updatedCategories);
-        }
+        const categoryData = {
+            name: name.trim(),
+            slug: slug.trim() || generateSlug(name.trim()),
+            description: description.trim(),
+            parentId: parentId !== 'none' ? parseInt(parentId) : null,
+        };
 
-        // Reset form
-        resetForm();
+        
+        // Call parent save function
+        if (onSave) {
+            onSave(categoryData);
+        }
     };
 
     // Reset form
@@ -152,28 +168,23 @@ export function CategoriesManager({
         setDescription('');
         setParentId('none');
         setEditingId(null);
+        
     };
 
     // Edit category
     const handleEdit = (category: CategoryItem) => {
-        setName(category.name);
-        setSlug(category.slug);
-        setDescription(category.description);
-        setParentId(category.parentId?.toString() || 'none');
-        setEditingId(category.id);
+        if (onEdit) {
+            onEdit(category.id);
+        }
     };
 
     // Delete category
     const handleDelete = (id: number) => {
-        if (confirm('Are you sure you want to delete this category?')) {
-            const updatedCategories = categories.filter(cat => cat.id !== id);
-            setCategories(updatedCategories);
-            onCategoriesChange?.(updatedCategories);
-            
-            if (editingId === id) {
-                resetForm();
+  
+            if (onDelete) {
+                onDelete(id);
             }
-        }
+        
     };
 
     // Handle sorting
@@ -240,7 +251,9 @@ export function CategoriesManager({
     }, [categories, sortField, sortDirection, searchQuery]);
 
     // Get parent categories (categories without parent)
-    const parentCategories = categories.filter(cat => cat.parentId === null);
+    const availableParentCategories = (parentCategories && parentCategories.length > 0) 
+        ? parentCategories.filter(cat => cat.id !== editingId)
+        : categories.filter(cat => cat.parentId === null && cat.id !== editingId);
 
     // Get item type label
     const getItemTypeLabel = () => {
@@ -248,15 +261,6 @@ export function CategoriesManager({
             case 'blog': return 'posts';
             case 'portfolio': return 'items';
             default: return 'items';
-        }
-    };
-
-    // Get item type singular label
-    const getItemTypeSingularLabel = () => {
-        switch (itemType) {
-            case 'blog': return 'post';
-            case 'portfolio': return 'item';
-            default: return 'item';
         }
     };
 
@@ -284,6 +288,16 @@ export function CategoriesManager({
                             <Badge variant="secondary">
                                 {filteredAndSortedCategories.length} categories
                             </Badge>
+                            {editingId && (
+                                <Button 
+                                    variant="outline" 
+                                    onClick={resetForm}
+                                    className="gap-2"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    Add New
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -291,7 +305,7 @@ export function CategoriesManager({
                     <Card>
                         <CardHeader>
                             <CardTitle>
-                                {editingId ? 'Edit Category' : 'Add New Category'}
+                                {editingId ? `Edit Category (ID: ${editingId})` : 'Add New Category'}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -329,8 +343,11 @@ export function CategoriesManager({
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="none">None (Top Level)</SelectItem>
-                                                {parentCategories.map(category => (
-                                                    <SelectItem key={category.id} value={category.id.toString()}>
+                                                {availableParentCategories.map(category => (
+                                                    <SelectItem 
+                                                        key={category.id} 
+                                                        value={category.id.toString()}
+                                                    >
                                                         {category.name}
                                                     </SelectItem>
                                                 ))}
@@ -339,14 +356,13 @@ export function CategoriesManager({
                                     </div>
                             
                                     <div>
-                                        <Label htmlFor="description">Description *</Label>
+                                        <Label htmlFor="description">Description</Label>
                                         <Textarea
                                             id="description"
                                             value={description}
                                             onChange={(e) => setDescription(e.target.value)}
                                             placeholder={`Brief description of the ${itemType} category`}
                                             rows={4}
-                                            required
                                         />
                                     </div>
 
@@ -423,6 +439,9 @@ export function CategoriesManager({
                                         <TableRow key={category.id}>
                                             <TableCell className="font-medium">
                                                 {category.name}
+                                                {editingId === category.id && (
+                                                    <Badge className="ml-2" variant="outline">Editing</Badge>
+                                                )}
                                             </TableCell>
                                             <TableCell className="text-sm text-gray-500">
                                                 {category.slug}

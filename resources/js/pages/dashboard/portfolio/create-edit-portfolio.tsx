@@ -65,52 +65,7 @@ export default function CreateEditPortfolio() {
             initialTags={portfolioTags}
             onSubmit={handleSubmit}
         >
-            {/* Portfolio-specific fields */}
-            <div className="space-y-4">
-                {/* Project URL */}
-                <div>
-                    <Label htmlFor="project-url">Project URL</Label>
-                    <Input
-                        id="project-url"
-                        value={projectUrl}
-                        onChange={(e) => setProjectUrl(e.target.value)}
-                        placeholder="https://example.com"
-                        type="url"
-                    />
-                </div>
-
-                {/* Client Name */}
-                <div>
-                    <Label htmlFor="client-name">Client Name</Label>
-                    <Input
-                        id="client-name"
-                        value={clientName}
-                        onChange={(e) => setClientName(e.target.value)}
-                        placeholder="Enter client or company name"
-                    />
-                </div>
-
-                {/* Project Date */}
-                <div>
-                    <Label htmlFor="project-date">Project Date</Label>
-                    <Input
-                        id="project-date"
-                        value={projectDate}
-                        onChange={(e) => setProjectDate(e.target.value)}
-                        type="date"
-                    />
-                </div>
-
-                {/* Additional Details (Portfolio-specific) */}
-                <div>
-                    <Label htmlFor="project-details">Project Details</Label>
-                    <Textarea
-                        id="project-details"
-                        placeholder="Describe the project goals, challenges, and solutions..."
-                        rows={6}
-                    />
-                </div>
-            </div>
+            
         </CreateEditForm>
     );
 }

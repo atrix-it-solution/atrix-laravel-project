@@ -1,3 +1,18 @@
+// import AppLogoIcon from './app-logo-icon';
+
+// const AppLogoImage = "/logo/logo-white.svg"
+
+// export default function AppLogo() {
+//     return (
+//         <>
+//             <div className="flex items-center justify-center ">
+//                 <img src={AppLogoImage} alt='Atrix' className='img-fluid' height={'200px'} width={'200px'}/>
+//             </div>
+//         </>
+//     );
+// }
+
+
 import AppLogoIcon from './app-logo-icon';
 
 export default function AppLogo() {

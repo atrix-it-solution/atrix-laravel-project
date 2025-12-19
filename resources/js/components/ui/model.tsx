@@ -2,6 +2,7 @@ import React from "react";
 import { useRef, useEffect } from "react";
 
 interface ModalProps {
+  title?:string;
   isOpen: boolean;
   onClose: () => void;
   className?: string;

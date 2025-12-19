@@ -39,12 +39,12 @@ const mainNavItems: NavItem[] = [
             },
             {
                 title: 'Categories',
-                href: "/dashboard/categories-blog",
+                href: "/dashboard/blog-categories",
                 // icon: Plus,
             },
             {
                 title: 'Tags',
-                href: "/dashboard/tags-blog",
+                href: "/dashboard/blog-tags",
                 // icon: Plus,
             },
         ]
@@ -66,12 +66,12 @@ const mainNavItems: NavItem[] = [
             },
             {
                 title: 'Categories',
-                href: "/dashboard/categories-portfolio",
+                href: "/dashboard/portfolio-categories",
                 // icon: Plus,
             },
             {
                 title: 'Tags',
-                href: "/dashboard/tags-portfolio",
+                href: "/dashboard/portfolio-tags",
                 // icon: Plus,
             },
         ]

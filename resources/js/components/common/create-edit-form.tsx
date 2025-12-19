@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -14,6 +14,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import RichTextEditor from '../ui/RichTextEditor';
+import Media from './media';
 
 export interface CreateEditFormProps {
     title: string;
@@ -21,8 +23,19 @@ export interface CreateEditFormProps {
     type: 'blog' | 'portfolio';
     initialCategories: CategoryOption[];
     initialTags: TagOption[];
-    onSubmit: (data: FormData) => void;
+    onSubmit: (data: any) => void;
     children?: React.ReactNode;
+    initialData?: {
+        title?: string;
+        slug?: string;
+        description?: string;
+        content?: string;
+        featured_image?: string | null;
+        featured_image_url?: string | null;
+        status?: 'draft' | 'published' | 'archived';
+        categories?: number[];
+        tags?: number[];
+    };
 }
 
 export function CreateEditForm({
@@ -32,20 +45,29 @@ export function CreateEditForm({
     initialCategories,
     initialTags,
     onSubmit,
-    children
+    children,
+    initialData = {}
 }: CreateEditFormProps) {
     // Form state
-    const [formTitle, setFormTitle] = useState('');
-    const [slug, setSlug] = useState('');
-    const [description, setDescription] = useState('');
-    const [content, setContent] = useState('');
-    const [featuredImage, setFeaturedImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string>('');
-    const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
-    const [selectedTags, setSelectedTags] = useState<number[]>([]);
-    const [newTag, setNewTag] = useState('');
-    const [status, setStatus] = useState<'draft' | 'published'>('draft');
-    const [allTags, setAllTags] = useState<TagOption[]>(initialTags);
+    const [formData, setFormData] = useState({
+        title: initialData.title || '',
+        slug: initialData.slug || '',
+        description: initialData.description || '',
+        content: initialData.content || '',
+        featured_image: initialData.featured_image || null,
+        featured_image_url: initialData.featured_image_url || '',
+        status: initialData.status || 'draft' as 'draft' | 'published' | 'archived',
+        categories: initialData.categories || [] as number[],
+        tags: initialData.tags || [] as number[],
+    });
+
+    // Update form data
+    const updateFormData = (field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
 
     // Generate slug from title
     const generateSlug = (title: string) => {
@@ -59,106 +81,68 @@ export function CreateEditForm({
 
     // Handle title change and auto-generate slug
     const handleTitleChange = (value: string) => {
-        setFormTitle(value);
-        if (!slug) {
-            setSlug(generateSlug(value));
+        updateFormData('title', value);
+        if (!formData.slug || value !== initialData.title) {
+            const slug = generateSlug(value);
+            updateFormData('slug', slug);
         }
-    };
-
-    // Handle featured image upload
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setFeaturedImage(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    // Remove featured image
-    const removeFeaturedImage = () => {
-        setFeaturedImage(null);
-        setImagePreview('');
-    };
-
-    // Handle category toggle
-    const handleCategoryToggle = (id: number) => {
-        setSelectedCategories(prev =>
-            prev.includes(id)
-                ? prev.filter(catId => catId !== id)
-                : [...prev, id]
-        );
-    };
-
-    // Handle tag toggle
-    const handleTagToggle = (tagId: number) => {
-        setSelectedTags(prev => 
-            prev.includes(tagId)
-                ? prev.filter(id => id !== tagId)
-                : [...prev, tagId]
-        );
-    };
-
-    // Handle adding new tag
-    const handleAddNewTag = () => {
-        const tagName = newTag.trim();
-        if (!tagName) return;
-
-        // Prevent duplicate tags
-        const exists = allTags.some(
-            tag => tag.name.toLowerCase() === tagName.toLowerCase()
-        );
-
-        if (exists) {
-            setNewTag('');
-            return;
-        }
-
-        const newTagObj = {
-            id: Date.now(), // temporary unique ID
-            name: tagName,
-        };
-
-        setAllTags(prev => [...prev, newTagObj]);
-        setSelectedTags(prev => [...prev, newTagObj.id]);
-        setNewTag('');
     };
 
     // Handle form submission
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('title', formTitle);
-        formData.append('slug', slug);
-        formData.append('description', description);
-        formData.append('content', content);
-        formData.append('type', type);
-        formData.append('status', status);
+        // Validate required fields
+        if (!formData.title.trim()) {
+            alert('Please enter a title');
+            return;
+        }
         
-        selectedCategories.forEach(id => {
-            formData.append('categories[]', id.toString());
-        });
-        
-        selectedTags.forEach(tagId => {
-            formData.append('tags[]', tagId.toString());
-        });
-        
-        if (featuredImage) {
-            formData.append('featured_image', featuredImage);
+        if (!formData.content.trim()) {
+            alert('Please enter content');
+            return;
         }
 
+        // Prepare the data object
+        const submitData = {
+            ...formData,
+            // Ensure slug is set
+            slug: formData.slug || generateSlug(formData.title),
+        };
+
         // Call the onSubmit prop
-        onSubmit(formData);
+        onSubmit(submitData);
     };
 
     const getItemTypeLabel = () => {
         return type === 'blog' ? 'Blog Post' : 'Portfolio Item';
     };
+
+    const handleFileSelect = (fileId: string | null, fileUrl?: string) => {
+        updateFormData('featured_image', fileId);
+        if (fileUrl) {
+            updateFormData('featured_image_url', fileUrl);
+        } else {
+            updateFormData('featured_image_url', '');
+        }
+    };
+
+    // When initialData changes, update form
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                title: initialData.title || '',
+                slug: initialData.slug || '',
+                description: initialData.description || '',
+                content: initialData.content || '',
+                featured_image: initialData.featured_image || null,
+                featured_image_url: initialData.featured_image_url || '',
+                status: initialData.status || 'draft',
+                categories: initialData.categories || [],
+                tags: initialData.tags || [],
+            });
+        }
+    }, [initialData]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -182,7 +166,7 @@ export function CreateEditForm({
                                             <Label htmlFor="title">Title *</Label>
                                             <Input
                                                 id="title"
-                                                value={formTitle}
+                                                value={formData.title}
                                                 onChange={(e) => handleTitleChange(e.target.value)}
                                                 placeholder={`Enter ${getItemTypeLabel().toLowerCase()} title`}
                                                 required
@@ -191,12 +175,13 @@ export function CreateEditForm({
 
                                         {/* Slug */}
                                         <div>
-                                            <Label htmlFor="slug">Slug</Label>
+                                            <Label htmlFor="slug">Slug *</Label>
                                             <Input
                                                 id="slug"
-                                                value={slug}
-                                                onChange={(e) => setSlug(e.target.value)}
+                                                value={formData.slug}
+                                                onChange={(e) => updateFormData('slug', e.target.value)}
                                                 placeholder={`${type}-item-url-slug`}
+                                                required
                                             />
                                             <p className="text-sm text-gray-500 mt-1">
                                                 URL-friendly version of the title
@@ -205,53 +190,90 @@ export function CreateEditForm({
 
                                         {/* Description */}
                                         <div>
-                                            <Label htmlFor="description">Description *</Label>
+                                            <Label htmlFor="description">Short Description</Label>
                                             <Textarea
                                                 id="description"
-                                                value={description}
-                                                onChange={(e) => setDescription(e.target.value)}
-                                                placeholder={`Brief description of your ${getItemTypeLabel().toLowerCase()}`}
-                                                rows={4}
-                                                required
+                                                value={formData.description}
+                                                onChange={(e) => updateFormData('description', e.target.value)}
+                                                placeholder={`Enter a short description of your ${getItemTypeLabel().toLowerCase()}`}
+                                                rows={3}
                                             />
                                         </div>
 
-                                        {/* Content Editor - Can be customized per type */}
-                                        {children}
+                                        {/* Content Editor */}
+                                        <div>
+                                            <Label htmlFor="content">Content *</Label>
+                                            <RichTextEditor
+                                                value={formData.content}
+                                                onChange={(content) => updateFormData('content', content)}
+                                                placeholder={`Write your ${getItemTypeLabel().toLowerCase()} content here...`}
+                                                label="Content"
+                                            />
+                                        </div>
 
-                                        {/* Additional fields can be added here */}
+                                        {/* Additional type-specific fields (passed as children) */}
+                                        {children}
                                     </div>
 
                                     {/* Right column - Sidebar */}
                                     <div className="col-2 space-y-6">
                                         <PublishCard
-                                            status={status}
-                                            onStatusChange={setStatus}
-                                            onSubmit={() => handleSubmit}
-                                            submitLabel={`${status === 'published' ? 'Publish' : 'Save Draft'} ${getItemTypeLabel()}`}
+                                            status={formData.status}
+                                            onStatusChange={(status) => updateFormData('status', status)}
+                                            onSubmit={handleSubmit}
+                                            submitLabel={`${formData.status === 'published' ? 'Publish' : 'Save Draft'} ${getItemTypeLabel()}`}
                                         />
+                                        
+                                        {/* Featured Image */}
+                                        <div className="card">
+                                            <div className="card-header">
+                                                <h4 className="card-title">Featured Image</h4>
+                                            </div>
+                                            <div className="card-body">
+                                                <Media
+                                                    onFileSelect={handleFileSelect}
+                                                    selectedFile={formData.featured_image}
+                                                    title="Featured Image"
+                                                    setName="Set Featured Image"
+                                                    Componenttitle="Featured Image"
+                                                    h1="Select Featured Image"
+                                                    SetButtonName="Use as Featured Image"
+                                                />
+                                                {formData.featured_image_url && (
+                                                    <div className="mt-3">
+                                                        <img 
+                                                            src={formData.featured_image_url} 
+                                                            alt="Featured" 
+                                                            className="w-full h-32 object-cover rounded"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
 
-                                        <ImageUpload
-                                            imagePreview={imagePreview}
-                                            onImageUpload={handleImageUpload}
-                                            onRemoveImage={removeFeaturedImage}
-                                            label={`${getItemTypeLabel()} Image`}
-                                        />
-
+                                        {/* Categories */}
                                         <CategoriesSelector
                                             categories={initialCategories}
-                                            selectedCategories={selectedCategories}
-                                            onCategoryToggle={handleCategoryToggle}
+                                            selectedCategories={formData.categories}
+                                            onCategoryToggle={(id) => {
+                                                const newCategories = formData.categories.includes(id)
+                                                    ? formData.categories.filter(catId => catId !== id)
+                                                    : [...formData.categories, id];
+                                                updateFormData('categories', newCategories);
+                                            }}
                                             title={type === 'blog' ? 'Blog Categories' : 'Portfolio Categories'}
                                         />
 
+                                        {/* Tags */}
                                         <TagsSelector
-                                            allTags={allTags}
-                                            selectedTags={selectedTags}
-                                            onTagToggle={handleTagToggle}
-                                            onAddTag={handleAddNewTag}
-                                            newTag={newTag}
-                                            onNewTagChange={setNewTag}
+                                            allTags={initialTags}
+                                            selectedTags={formData.tags}
+                                            onTagToggle={(id) => {
+                                                const newTags = formData.tags.includes(id)
+                                                    ? formData.tags.filter(tagId => tagId !== id)
+                                                    : [...formData.tags, id];
+                                                updateFormData('tags', newTags);
+                                            }}
                                             title={type === 'blog' ? 'Blog Tags' : 'Portfolio Tags'}
                                         />
                                     </div>
