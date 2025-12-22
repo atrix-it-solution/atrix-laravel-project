@@ -59,7 +59,7 @@ class DashboardBlogController extends Controller
             'slug' => 'required|string|unique:blogs,slug',
             'description' => 'nullable|string',
             'content' => 'required|string',
-            'featured_image' => 'nullable|string',
+            'featured_image' => 'nullable|integer|exists:media,id',
             'author' => 'nullable|string|max:255',
             'author_description' => 'nullable|string',
             'meta_title' => 'nullable|string|max:255',
@@ -73,6 +73,8 @@ class DashboardBlogController extends Controller
             'tags.*' => 'exists:tags,id',
         ]);
 
+        $validated['featured_image_id'] = $validated['featured_image'] ?? null;
+    unset($validated['featured_image']);
         // Create the blog
         $blog = Blog::create($validated);
 
@@ -86,7 +88,7 @@ class DashboardBlogController extends Controller
             $blog->tags()->sync($request->tags);
         }
 
-        return redirect()->route('dashboard.blogs.index')
+        return redirect()->route('blogs.index')
             ->with('success', 'Blog created successfully.');
     }
 
@@ -167,7 +169,7 @@ class DashboardBlogController extends Controller
             'slug' => 'required|string|unique:blogs,slug,' . $blog->id,
             'description' => 'nullable|string',
             'content' => 'required|string',
-            'featured_image' => 'nullable|string',
+            'featured_image' => 'nullable|integer|exists:media,id',
             'author' => 'nullable|string|max:255',
             'author_description' => 'nullable|string',
             'meta_title' => 'nullable|string|max:255',
@@ -181,6 +183,9 @@ class DashboardBlogController extends Controller
             'tags.*' => 'exists:tags,id',
         ]);
 
+        $validated['featured_image_id'] = $validated['featured_image'] ?? null;
+    unset($validated['featured_image']);
+
         // Update slug only if title changed
         if ($blog->title !== $request->title && !$request->filled('slug')) {
             $validated['slug'] = Str::slug($request->title) . '-' . time();
@@ -192,7 +197,7 @@ class DashboardBlogController extends Controller
         $blog->categories()->sync($request->categories ?? []);
         $blog->tags()->sync($request->tags ?? []);
 
-        return redirect()->route('dashboard.blogs.index')
+        return redirect()->route('blogs.index')
             ->with('success', 'Blog updated successfully.');
     }
 
@@ -204,7 +209,7 @@ class DashboardBlogController extends Controller
         $blog = Blog::findOrFail($id);
         $blog->delete();
         
-        return redirect()->route('dashboard.blogs.index')
+        return redirect()->route('blogs.index')
             ->with('success', 'Blog deleted successfully.');
     }
 

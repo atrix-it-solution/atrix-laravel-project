@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { 
@@ -16,6 +15,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import RichTextEditor from '../ui/RichTextEditor';
 import Media from './media';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { FolderOpen } from 'lucide-react';
 
 export interface CreateEditFormProps {
     title: string;
@@ -30,13 +32,14 @@ export interface CreateEditFormProps {
         slug?: string;
         description?: string;
         content?: string;
-        featured_image?: string | null;
+        featured_image?: number | null;
         featured_image_url?: string | null;
         status?: 'draft' | 'published' | 'archived';
         categories?: number[];
         tags?: number[];
     };
 }
+
 
 export function CreateEditForm({
     title,
@@ -110,6 +113,8 @@ export function CreateEditForm({
             slug: formData.slug || generateSlug(formData.title),
         };
 
+        // console.log('Form data to submit:', submitData);
+
         // Call the onSubmit prop
         onSubmit(submitData);
     };
@@ -118,7 +123,7 @@ export function CreateEditForm({
         return type === 'blog' ? 'Blog Post' : 'Portfolio Item';
     };
 
-    const handleFileSelect = (fileId: string | null, fileUrl?: string) => {
+    const handleFileSelect = (fileId: number | null, fileUrl?: string) => {
         updateFormData('featured_image', fileId);
         if (fileUrl) {
             updateFormData('featured_image_url', fileUrl);
@@ -145,9 +150,8 @@ export function CreateEditForm({
     }, [initialData]);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <>
             <Head title={title} />
-            
             <div className="pt-10">
                 <div className="container-fluid">
                     <div className="row">
@@ -156,133 +160,203 @@ export function CreateEditForm({
                                 title={title}
                                 subtitle={`Fill in the details to create a new ${getItemTypeLabel().toLowerCase()}`}
                             />
-
-                            <form onSubmit={handleSubmit}>
-                                <div className="row">
-                                    {/* Left column - Main content */}
-                                    <div className="col-10 space-y-6">
-                                        {/* Title */}
-                                        <div>
-                                            <Label htmlFor="title">Title *</Label>
-                                            <Input
-                                                id="title"
-                                                value={formData.title}
-                                                onChange={(e) => handleTitleChange(e.target.value)}
-                                                placeholder={`Enter ${getItemTypeLabel().toLowerCase()} title`}
-                                                required
-                                            />
-                                        </div>
-
-                                        {/* Slug */}
-                                        <div>
-                                            <Label htmlFor="slug">Slug *</Label>
-                                            <Input
-                                                id="slug"
-                                                value={formData.slug}
-                                                onChange={(e) => updateFormData('slug', e.target.value)}
-                                                placeholder={`${type}-item-url-slug`}
-                                                required
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">
-                                                URL-friendly version of the title
-                                            </p>
-                                        </div>
-
-                                        {/* Description */}
-                                        <div>
-                                            <Label htmlFor="description">Short Description</Label>
-                                            <Textarea
-                                                id="description"
-                                                value={formData.description}
-                                                onChange={(e) => updateFormData('description', e.target.value)}
-                                                placeholder={`Enter a short description of your ${getItemTypeLabel().toLowerCase()}`}
-                                                rows={3}
-                                            />
-                                        </div>
-
-                                        {/* Content Editor */}
-                                        <div>
-                                            <Label htmlFor="content">Content *</Label>
-                                            <RichTextEditor
-                                                value={formData.content}
-                                                onChange={(content) => updateFormData('content', content)}
-                                                placeholder={`Write your ${getItemTypeLabel().toLowerCase()} content here...`}
-                                                label="Content"
-                                            />
-                                        </div>
-
-                                        {/* Additional type-specific fields (passed as children) */}
-                                        {children}
-                                    </div>
-
-                                    {/* Right column - Sidebar */}
-                                    <div className="col-2 space-y-6">
-                                        <PublishCard
-                                            status={formData.status}
-                                            onStatusChange={(status) => updateFormData('status', status)}
-                                            onSubmit={handleSubmit}
-                                            submitLabel={`${formData.status === 'published' ? 'Publish' : 'Save Draft'} ${getItemTypeLabel()}`}
-                                        />
-                                        
-                                        {/* Featured Image */}
-                                        <div className="card">
-                                            <div className="card-header">
-                                                <h4 className="card-title">Featured Image</h4>
-                                            </div>
-                                            <div className="card-body">
-                                                <Media
-                                                    onFileSelect={handleFileSelect}
-                                                    selectedFile={formData.featured_image}
-                                                    title="Featured Image"
-                                                    setName="Set Featured Image"
-                                                    Componenttitle="Featured Image"
-                                                    h1="Select Featured Image"
-                                                    SetButtonName="Use as Featured Image"
-                                                />
-                                                {formData.featured_image_url && (
-                                                    <div className="mt-3">
-                                                        <img 
-                                                            src={formData.featured_image_url} 
-                                                            alt="Featured" 
-                                                            className="w-full h-32 object-cover rounded"
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Categories */}
-                                        <CategoriesSelector
-                                            categories={initialCategories}
-                                            selectedCategories={formData.categories}
-                                            onCategoryToggle={(id) => {
-                                                const newCategories = formData.categories.includes(id)
-                                                    ? formData.categories.filter(catId => catId !== id)
-                                                    : [...formData.categories, id];
-                                                updateFormData('categories', newCategories);
-                                            }}
-                                            title={type === 'blog' ? 'Blog Categories' : 'Portfolio Categories'}
-                                        />
-
-                                        {/* Tags */}
-                                        <TagsSelector
-                                            allTags={initialTags}
-                                            selectedTags={formData.tags}
-                                            onTagToggle={(id) => {
-                                                const newTags = formData.tags.includes(id)
-                                                    ? formData.tags.filter(tagId => tagId !== id)
-                                                    : [...formData.tags, id];
-                                                updateFormData('tags', newTags);
-                                            }}
-                                            title={type === 'blog' ? 'Blog Tags' : 'Portfolio Tags'}
+                            
+                            <div className="row">
+                                <div className="col-10 space-y-6">
+                                    {/* Title */}
+                                    <div>
+                                        <Label htmlFor="title">Title *</Label>
+                                        <Input
+                                            id="title"
+                                            value={formData.title}
+                                            onChange={(e) => handleTitleChange(e.target.value)}
+                                            placeholder={`Enter ${getItemTypeLabel().toLowerCase()} title`}
+                                            required
                                         />
                                     </div>
+
+                                    {/* Slug */}
+                                    <div>
+                                        <Label htmlFor="slug">Slug *</Label>
+                                        <Input
+                                            id="slug"
+                                            value={formData.slug}
+                                            onChange={(e) => updateFormData('slug', e.target.value)}
+                                            placeholder={`${type}-item-url-slug`}
+                                            required
+                                        />
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            URL-friendly version of the title
+                                        </p>
+                                    </div>
+
+                                    {/* Description */}
+                                    <div>
+                                        <Label htmlFor="description">Short Description</Label>
+                                        <Textarea
+                                            id="description"
+                                            value={formData.description}
+                                            onChange={(e) => updateFormData('description', e.target.value)}
+                                            placeholder={`Enter a short description of your ${getItemTypeLabel().toLowerCase()}`}
+                                            rows={3}
+                                        />
+                                    </div>
+
+                                    {/* Content Editor */}
+                                    <div>
+                                        <Label htmlFor="content">Content *</Label>
+                                        <RichTextEditor
+                                            value={formData.content}
+                                            onChange={(content) => updateFormData('content', content)}
+                                            placeholder={`Write your ${getItemTypeLabel().toLowerCase()} content here...`}
+                                            label="Content"
+                                        />
+                                    </div>
+                                    {children}
                                 </div>
-                            </form>
+
+                                {/* Right column - Sidebar */}
+                                <div className="col-2 space-y-6">
+                                    <div className="card">
+                                        <div className="card-body">
+                                            <Button
+                                                onClick={handleSubmit}
+                                                className="w-full bg-(--blue) hover:bg-(--blue) text-white"
+                                            >
+                                                {formData.status === 'published' ? 'Publish' : 'Save Draft'} {getItemTypeLabel()}
+                                            </Button>
+                                            <div className="mt-4">
+                                                <Label>Status</Label>
+                                                <select
+                                                    value={formData.status}
+                                                    onChange={(e) => updateFormData('status', e.target.value)}
+                                                    className="w-full border rounded p-2 mt-1"
+                                                >
+                                                    <option value="draft">Draft</option>
+                                                    <option value="published">Published</option>
+                                                    <option value="archived">Archived</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Featured Image */}
+                                
+                                    <div >
+                                        <Media
+                                            onFileSelect={handleFileSelect}
+                                            selectedFile={formData.featured_image}
+                                            title="Featured Image"
+                                            setName="Set Featured Image"
+                                            Componenttitle="Featured Image"
+                                            h1="Select Featured Image"
+                                            SetButtonName="Use as Featured Image"
+                                        />
+                                        {formData.featured_image_url && (
+                                            <div className="mt-3">
+                                                <img 
+                                                    src={formData.featured_image_url} 
+                                                    alt="Featured" 
+                                                    className="w-full h-32 object-cover rounded"
+                                                />
+                                            </div>
+                                        )}
+                                        {/* Hidden input for form submission */}
+                                        <input 
+                                            type="hidden" 
+                                            name="featured_image" 
+                                            value={formData.featured_image || ''}
+                                        />
+                                    </div>
+                                    
+
+                                    {/* Categories */}
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center gap-2">
+                                                <FolderOpen className="h-5 w-5" />
+                                            {type === 'blog' ? 'Blog Categories' : 'Portfolio Categories'}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                    
+                                            <div className="space-y-2">
+                                                {initialCategories.map((category) => (
+                                                    <div key={category.id} className="flex items-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            id={`category-${category.id}`}
+                                                            checked={formData.categories.includes(category.id)}
+                                                            onChange={(e) => {
+                                                                const newCategories = e.target.checked
+                                                                    ? [...formData.categories, category.id]
+                                                                    : formData.categories.filter(id => id !== category.id);
+                                                                updateFormData('categories', newCategories);
+                                                            }}
+                                                            className="mr-2"
+                                                        />
+                                                        <label htmlFor={`category-${category.id}`}>
+                                                            {category.name}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {/* Hidden input for form submission */}
+                                            <input 
+                                                type="hidden" 
+                                                name="categories" 
+                                                value={JSON.stringify(formData.categories)}
+                                            />
+                                        </CardContent>
+                                    </Card>
+
+                                    {/* Tags */}
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center gap-2">
+                                                <FolderOpen className="h-5 w-5" />
+                                                {type === 'blog' ? 'Blog Tags' : 'Portfolio Tags'}
+
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <h3 className="font-semibold mb-3">
+                                            </h3>
+                                            <div className="space-y-2">
+                                                {initialTags.map((tag) => (
+                                                    <div key={tag.id} className="flex items-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            id={`tag-${tag.id}`}
+                                                            checked={formData.tags.includes(tag.id)}
+                                                            onChange={(e) => {
+                                                                const newTags = e.target.checked
+                                                                    ? [...formData.tags, tag.id]
+                                                                    : formData.tags.filter(id => id !== tag.id);
+                                                                updateFormData('tags', newTags);
+                                                            }}
+                                                            className="mr-2"
+                                                        />
+                                                        <label htmlFor={`tag-${tag.id}`}>
+                                                            {tag.name}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {/* Hidden input for form submission */}
+                                            <input 
+                                                type="hidden" 
+                                                name="tags" 
+                                                value={JSON.stringify(formData.tags)}
+                                            />
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }

@@ -216,17 +216,16 @@ export function TagsSelector({
 
 // Publish/Save card component
 interface PublishCardProps {
-    status: 'draft' | 'published';
-    onStatusChange?: (status: 'draft' | 'published') => void;
-    onSubmit: () => void;
+    status: 'draft' | 'published' | 'archived';
+    onStatusChange?: (status: 'draft' | 'published' | 'archived') => void;
     submitLabel?: string;
     showStatusToggle?: boolean;
 }
 
+
 export function PublishCard({
     status,
     onStatusChange,
-    onSubmit,
     submitLabel = "Publish",
     showStatusToggle = true
 }: PublishCardProps) {

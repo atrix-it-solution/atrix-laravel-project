@@ -29,7 +29,7 @@ const mainNavItems: NavItem[] = [
         items: [
             {
                 title: 'All Blog',
-                href: "/dashboard/allblog",
+                href: "/dashboard/blogs",
                 // icon: FileText,
             },
             {

@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle } from "../ui/card";
 import { ImageIcon } from "lucide-react";
 
 type FileItem = {
-  id: string;
+  id: number;
   file: string;
   thumbnailUrl?: string;
   type: string;
@@ -23,8 +23,9 @@ type FileItem = {
 };
 
 interface MediaProps {
-  onFileSelect: (fileId: string | null) => void; 
-  selectedFile: string | null; 
+  onFileSelect: (fileId: number | null) => void; 
+  selectedFile: number | null; 
+   selectedFileUrl?: string | null;
   title: string; 
   setName: string; 
   Componenttitle: string; 
@@ -46,10 +47,12 @@ const Media: React.FC<MediaProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showUploadSection, setShowUploadSection] = useState<boolean>(true);
   const [showAllFilesSection, setShowAllFilesSection] = useState<boolean>(false);
-  const [selectedFileId, setSelectedFileId] = useState<string | null>(selectedFile);
+  const [selectedFileId, setSelectedFileId] = useState<number | null>(
+    selectedFile ? Number(selectedFile) : null
+  );
   const [selectedFileUrl, setSelectedFileUrl] = useState<string | null>(null);
   const [allFiles, setAllFiles] = useState<FileItem[]>(mediaList);
-  const [hoveredFile, setHoveredFile] = useState<string | null>(null);
+  const [hoveredFile, setHoveredFile] = useState<number | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
@@ -409,7 +412,7 @@ const Media: React.FC<MediaProps> = ({
   };
 
   // Delete file
-  const handleDeleteFile = async (fileId: string) => {
+  const handleDeleteFile = async (fileId: number) => {
     if (!window.confirm("Are you sure you want to delete this file?")) return;
     
     try {
@@ -446,7 +449,10 @@ const Media: React.FC<MediaProps> = ({
   };
 
   // Handle set featured file
-  const handleSetFeaturedFile = () => {
+  const handleSetFeaturedFile = (e: React.FormEvent) => {
+      e.preventDefault(); // Prevent form submission
+      e.stopPropagation();
+
     if (selectedFileId) {
       onFileSelect(selectedFileId);
       toast.success("File selected successfully");
@@ -480,7 +486,7 @@ const Media: React.FC<MediaProps> = ({
   };
 
   // Handle file click in gallery
-  const handleFileClick = (fileId: string, fileUrl: string) => {
+  const handleFileClick = (fileId: number, fileUrl: string) => {
     setSelectedFileId(selectedFileId === fileId ? null : fileId);
     setSelectedFileUrl(selectedFileId === fileId ? null : fileUrl);
   };
@@ -835,6 +841,7 @@ const Media: React.FC<MediaProps> = ({
                   Cancel
                 </Button>
                 <Button
+                type="button"
                   onClick={handleSetFeaturedFile}
                   disabled={!selectedFileId}
                   className="bg-(--blue) hover:bg-(--blue) text-white disabled:opacity-50 disabled:cursor-not-allowed"
