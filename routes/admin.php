@@ -17,12 +17,33 @@ use App\Http\Controllers\Dashboard\MediaController;
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('dashboard')->group(function () {
+        
         Route::get('/', function () {
             return Inertia::render('dashboard');
         })->name('dashboard');
 
-        Route::get('/allblog', [DashboardBlogController::class, 'index'])->name('admin.blog');
-        Route::get('/create-blog', [DashboardBlogController::class, 'create'])->name('admin.blog.create');
+
+         Route::get('/blogs', [DashboardBlogController::class, 'index'])
+        ->name('blogs.index');
+
+        Route::get('/create-blog', [DashboardBlogController::class, 'create'])
+            ->name('blogs.create');
+
+        Route::post('/create-blog', [DashboardBlogController::class, 'store'])
+            ->name('blogs.store');
+
+        Route::get('/edit-blog/{blog}', [DashboardBlogController::class, 'edit'])
+            ->name('blogs.edit');
+
+        Route::put('/edit-blog/{blog}', [DashboardBlogController::class, 'update'])
+            ->name('blogs.update');
+
+        Route::delete('/delete-blog/{blog}', [DashboardBlogController::class, 'destroy'])
+            ->name('blogs.destroy');
+
+        
+        
+
          Route::get('/blog-categories', [CategoriesBlogController::class, 'index'])->name('blog-categories.index');
         Route::post('/blog-categories', [CategoriesBlogController::class, 'store'])->name('blog-categories.store');
         Route::get('/blog-categories/create', [CategoriesBlogController::class, 'create'])->name('blog-categories.create');

@@ -8,20 +8,21 @@ import { router, usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { SharedPageProps } from '@/types/page-props';
+import { useCategories } from '@/contexts/CategoriesContext';
 
-interface CategoryOption {
+
+type Category = {
     id: number;
     name: string;
-    slug: string;
-}
+};
 
-interface TagOption {
+type Tag = {
     id: number;
     name: string;
-    slug: string;
-}
+};
 
-interface PageProps {
+interface PageProps extends SharedPageProps {
     blog?: {
         id: number;
         title: string;
@@ -39,11 +40,11 @@ interface PageProps {
         published_at: string | null;
         categories: number[];
         tags: number[];
-        category_details?: CategoryOption[];
-        tag_details?: TagOption[];
+        category_details?: Category[];
+        tag_details?: Tag[];
     };
-    categories: CategoryOption[];
-    tags: TagOption[];
+    categories: Category[];
+    tags: Tag[];
     isEdit?: boolean;
     flash?: {
         success?: string;
@@ -51,10 +52,13 @@ interface PageProps {
     };
 }
 
+
 export default function CreateEditBlog() {
-    const props = usePage<PageProps>().props;
-    const isEdit = props.isEdit || false;
-    const blog = props.blog;
+    const { blog, categories, tags, isEdit, flash } = usePage<PageProps>().props;
+
+    
+    
+
     
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: '/dashboard' },
@@ -71,21 +75,19 @@ export default function CreateEditBlog() {
     const [publishedAt, setPublishedAt] = useState(blog?.published_at || '');
 
     // Show flash messages
-    useEffect(() => {
-        if (props.flash?.success) {
-            alert(props.flash.success);
-        }
-        if (props.flash?.error) {
-            alert(props.flash.error);
-        }
-    }, [props.flash]);
+      useEffect(() => {
+        if (flash?.success) alert(flash.success);
+        if (flash?.error) alert(flash.error);
+    }, [flash]);
 
-    // Log categories and tags for debugging
-    useEffect(() => {
-        console.log('Available Categories:', props.categories);
-        console.log('Available Tags:', props.tags);
-        console.log('Blog Data:', blog);
-    }, [props.categories, props.tags, blog]);
+    // // Log categories and tags for debugging
+    // useEffect(() => {
+    //     console.log('Available Categories:', props.categories);
+    //     console.log('Available Tags:', props.tags);
+    //     console.log('Blog Data:', blog);
+    // }, [props.categories, props.tags, blog]);
+
+     ;
 
     const handleSubmit = (formData: any) => {
         // Combine formData with blog-specific fields
@@ -97,27 +99,32 @@ export default function CreateEditBlog() {
             meta_description: metaDescription,
             is_featured: isFeatured,
             published_at: publishedAt || null,
+            featured_image: formData.featured_image, 
+            categories: formData.categories || [], 
+            tags: formData.tags || [],
         };
-
-        console.log('Submitting data:', data);
+        //  console.log('Final data to submit:', data);
+        // console.log('Submitting data to backend:', data);
 
         if (isEdit && blog) {
-            router.put(`/dashboard/blogs/${blog.id}`, data, {
+            router.put(`/dashboard/edit-blog/${blog.id}`, data, {
                 preserveScroll: true,
                 onSuccess: () => {
                     router.visit('/dashboard/blogs');
                 },
                 onError: (errors) => {
+                    console.error('Update errors:', errors);
                     alert('Error updating blog: ' + JSON.stringify(errors));
                 }
             });
         } else {
-            router.post('/dashboard/blogs', data, {
+            router.post('/dashboard/create-blog', data, {
                 preserveScroll: true,
                 onSuccess: () => {
                     router.visit('/dashboard/blogs');
                 },
                 onError: (errors) => {
+                    console.error('Create errors:', errors);
                     alert('Error creating blog: ' + JSON.stringify(errors));
                 }
             });
@@ -130,7 +137,9 @@ export default function CreateEditBlog() {
         slug: blog.slug,
         description: blog.description,
         content: blog.content,
-        featured_image: blog.featured_image,
+        featured_image: blog.featured_image
+        ? Number(blog.featured_image)
+        : null,
         featured_image_url: blog.featured_image_url,
         status: blog.status,
         categories: blog.categories, // This should be array of category IDs
@@ -138,20 +147,20 @@ export default function CreateEditBlog() {
     } : {};
 
     return (
-        <>
-           
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title={isEdit ? 'Edit Blog' : 'Create Blog'} />
             <CreateEditForm
                 title={isEdit ? 'Edit Blog Post' : 'Create New Blog Post'}
                 breadcrumbs={breadcrumbs}
                 type="blog"
-                initialCategories={props.categories}
-                initialTags={props.tags}
+                initialCategories={categories}
+                initialTags={tags}
                 initialData={initialData}
                 onSubmit={handleSubmit}
             >
                 {/* Blog-specific fields */}
                 <div className="space-y-6 mt-6">
-                    <div className="">
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
                             <Label htmlFor="author">Author Name</Label>
                             <Input
@@ -217,6 +226,6 @@ export default function CreateEditBlog() {
                     </div>
                 </div>
             </CreateEditForm>  
-       </>
+        </AppLayout>
     );
 }

@@ -91,6 +91,7 @@ export default function CategoriesBlog() {
         if (editingCategory) {
             router.put(`/dashboard/blog-categories/${editingCategory.id}`, data, {
                 preserveScroll: true,
+                preserveState: false,
                 onSuccess: () => {
                     router.reload();
                 },
@@ -102,6 +103,7 @@ export default function CategoriesBlog() {
         } else {
             router.post('/dashboard/blog-categories', data, {
                 preserveScroll: true,
+                preserveState: false,
                 onSuccess: () => {
                     router.reload();
                 },
@@ -118,6 +120,7 @@ export default function CategoriesBlog() {
         if (confirm('Are you sure you want to delete this category?')) {
             router.delete(`/dashboard/blog-categories/${id}`, {
                 preserveScroll: true,
+                preserveState: false,
                 onSuccess: () => {
                     router.reload();
                 },

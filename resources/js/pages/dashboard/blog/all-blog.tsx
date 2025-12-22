@@ -66,7 +66,7 @@ export default function AllBlog() {
 
     const handleDelete = (id: number) => {
         if (confirm('Are you sure you want to delete this blog post?')) {
-            router.delete(`/dashboard/blogs/${id}`, {
+            router.delete(`/dashboard/delete-blog/${id}`, {
                 preserveScroll: true,
                 onSuccess: () => {
                     router.reload();
@@ -119,7 +119,7 @@ export default function AllBlog() {
                                     />
                                 </div>
                                 <Button 
-                                    onClick={() => router.visit('/dashboard/blogs/create')}
+                                    onClick={() => router.visit('/dashboard/create-blog')}
                                     className="gap-2"
                                 >
                                     <Plus className="h-4 w-4" />
@@ -135,11 +135,9 @@ export default function AllBlog() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Title</TableHead>
-                                        <TableHead>Status</TableHead>
                                         <TableHead>Categories</TableHead>
-                                        <TableHead>Views</TableHead>
                                         <TableHead>Published</TableHead>
-                                        <TableHead className="text-center">Actions</TableHead>
+                                        <TableHead className="align-middle">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -170,7 +168,6 @@ export default function AllBlog() {
                                                         )}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{getStatusBadge(blog.status)}</TableCell>
                                                 <TableCell>
                                                     <div className="flex flex-wrap gap-1">
                                                         {blog.categories.slice(0, 2).map(cat => (
@@ -185,11 +182,10 @@ export default function AllBlog() {
                                                         )}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{blog.views}</TableCell>
-                                                <TableCell>{formatDate(blog.published_at)}</TableCell>
+                                                <TableCell>{formatDate(blog.created_at)}</TableCell>
                                                 <TableCell>
                                                     <div className="flex justify-center gap-2">
-                                                        <Button 
+                                                        {/* <Button 
                                                             variant="outline" 
                                                             size="sm"
                                                             className="h-8 px-3 gap-1"
@@ -197,12 +193,12 @@ export default function AllBlog() {
                                                         >
                                                             <Eye className="h-3 w-3" />
                                                             View
-                                                        </Button>
+                                                        </Button> */}
                                                         <Button 
                                                             variant="outline" 
                                                             size="sm"
                                                             className="h-8 px-3 gap-1"
-                                                            onClick={() => router.visit(`/dashboard/blogs/${blog.id}/edit`)}
+                                                            onClick={() => router.visit(`/dashboard/edit-blog/${blog.id}`)}
                                                         >
                                                             <Edit className="h-3 w-3" />
                                                             Edit

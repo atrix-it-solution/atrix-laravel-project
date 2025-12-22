@@ -7,6 +7,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import { CategoriesProvider } from '@/contexts/CategoriesContext';
+import { CategoryOption } from '@/types/category';
 
 
 
@@ -15,7 +17,7 @@ const appName = import.meta.env.VITE_APP_NAME || 'AtrixItSolutions';
 
 interface BgAnimationProps {
   children?: ReactNode;
-}
+}   
 
 const BgAnimation: React.FC<BgAnimationProps> = ({ children }) => (
     
@@ -99,12 +101,15 @@ createInertiaApp({
             import.meta.glob('./pages/**/*.tsx'),
         ),
     setup({ el, App, props }) {
+        const initialCategories = (props.initialPage?.props?.categories as CategoryOption[]) || [];
         const root = createRoot(el);
 
         root.render(
             <StrictMode>
                 <BgAnimation>
+                    <CategoriesProvider initialCategories={initialCategories}>
                         <App {...props} />
+                    </CategoriesProvider>
                 </BgAnimation>
             </StrictMode>,
         );
