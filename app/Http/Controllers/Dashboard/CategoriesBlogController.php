@@ -28,7 +28,7 @@ class CategoriesBlogController extends Controller
         return Inertia::render('dashboard/blog/categories', [
             'categories' => $categories,
             'parentCategories' => $parentCategories,
-            'allCategories' => $categories, // For dropdowns
+            'allCategories' => $categories, 
         ]);
     }
 

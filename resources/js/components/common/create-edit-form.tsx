@@ -281,7 +281,8 @@ export function CreateEditForm({
                                         <CardContent>
                                     
                                             <div className="space-y-2">
-                                                {initialCategories.map((category) => (
+                                                {/* {initialCategories.map((category) => ( */}
+                                                {Array.isArray(initialCategories) && initialCategories.map((category) => (
                                                     <div key={category.id} className="flex items-center">
                                                         <input
                                                             type="checkbox"
@@ -323,7 +324,8 @@ export function CreateEditForm({
                                             <h3 className="font-semibold mb-3">
                                             </h3>
                                             <div className="space-y-2">
-                                                {initialTags.map((tag) => (
+                                                {/* {initialTags.map((tag) => ( */}
+                                                {Array.isArray(initialTags) && initialTags.map((tag) => (
                                                     <div key={tag.id} className="flex items-center">
                                                         <input
                                                             type="checkbox"

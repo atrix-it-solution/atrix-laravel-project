@@ -56,10 +56,6 @@ interface PageProps extends SharedPageProps {
 export default function CreateEditBlog() {
     const { blog, categories, tags, isEdit, flash } = usePage<PageProps>().props;
 
-    
-    
-
-    
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: '/dashboard' },
         { title: 'Blogs', href: '/dashboard/blogs' },
@@ -88,6 +84,9 @@ export default function CreateEditBlog() {
     // }, [props.categories, props.tags, blog]);
 
      ;
+useEffect(() => {
+    router.reload({ only: ['categories'] });
+}, []);
 
     const handleSubmit = (formData: any) => {
         // Combine formData with blog-specific fields
