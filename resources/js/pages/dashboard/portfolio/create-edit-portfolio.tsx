@@ -1,71 +1,150 @@
 
-import { useState } from 'react';
-import { CreateEditForm } from '@/components/common/create-edit-form';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+    import { useEffect, useState } from 'react';
+    import { CreateEditForm } from '@/components/common/create-edit-form';
+    import AppLayout from '@/layouts/app-layout';
+    import { Head, router, usePage } from '@inertiajs/react';
+    import { SharedPageProps } from '@/types/page-props';
+    import { BreadcrumbItem } from '@/components/categories/categories-manager';
 
-const breadcrumbs = [
-    {
-        title: 'Create Portfolio Item',
-        href: "/dashboard/create-portfolio",
-    },
-];
 
-// Mock data for portfolio categories and tags
-const portfolioCategories = [
-    { id: 1, name: 'Web Development' },
-    { id: 2, name: 'Mobile Apps' },
-    { id: 3, name: 'UI/UX Design' },
-    { id: 4, name: 'E-commerce' },
-    { id: 5, name: 'Branding' },
-    { id: 6, name: 'Logo Design' },
-    { id: 7, name: 'Graphic Design' },
-    { id: 8, name: 'Digital Marketing' },
-];
 
-const portfolioTags = [
-    { id: 1, name: 'React' },
-    { id: 2, name: 'Laravel' },
-    { id: 3, name: 'Vue.js' },
-    { id: 4, name: 'Next.js' },
-    { id: 5, name: 'Tailwind CSS' },
-    { id: 6, name: 'Figma' },
-    { id: 7, name: 'Adobe XD' },
-    { id: 8, name: 'Photoshop' },
-    { id: 9, name: 'Illustrator' },
-    { id: 10, name: 'Responsive Design' },
-    { id: 11, name: 'SEO' },
-    { id: 12, name: 'Performance' },
-];
-
-export default function CreateEditPortfolio() {
-    const [projectUrl, setProjectUrl] = useState('');
-    const [clientName, setClientName] = useState('');
-    const [projectDate, setProjectDate] = useState('');
-
-    const handleSubmit = (formData: FormData) => {
-        // Add portfolio-specific fields
-        formData.append('project_url', projectUrl);
-        formData.append('client_name', clientName);
-        formData.append('project_date', projectDate);
-        
-        console.log('Portfolio form data:', Object.fromEntries(formData.entries()));
-        
-        const status = formData.get('status');
-        alert(`Portfolio item ${status === 'draft' ? 'saved as draft' : 'published successfully'}!`);
+    type Category = {
+        id: number;
+        name: string;
     };
 
-    return (
-        <CreateEditForm
-            title="Create New Portfolio Item"
-            breadcrumbs={breadcrumbs}
-            type="portfolio"
-            initialCategories={portfolioCategories}
-            initialTags={portfolioTags}
-            onSubmit={handleSubmit}
-        >
+    type Tag = {
+        id: number;
+        name: string;
+    };
+
+    interface PageProps extends SharedPageProps {
+        portfolio?: {
+            id: number;
+            title: string;
+            slug: string;
+            description: string;
+            content: string;
+            featured_image: string | null;
+            featured_image_url: string | null;
+            meta_title: string;
+            meta_description: string;
+            status: 'draft' | 'published' | 'archived';
+            is_featured: boolean;
+            published_at: string | null;
+            categories: number[];
+            tags: number[];
+            category_details?: Category[];
+            tag_details?: Tag[];
+        };
+        categories: Category[];
+        tags: Tag[];
+        isEdit?: boolean;
+        flash?: {
+            success?: string;
+            error?: string;
+        };
+    }
+
+    export default function CreateEditPortfolio() {
+        const { portfolio, categories, tags, isEdit, flash } = usePage<PageProps>().props;
+        
+            const breadcrumbs: BreadcrumbItem[] = [
+                { title: 'Dashboard', href: '/dashboard' },
+            {
+                    title: 'Create Portfolio Item',
+                    href: "/dashboard/create-portfolio",
+                },
+                { title: isEdit ? 'Edit Portfolio' : 'Create Portfolio', href: '#' },
+            ];
+    
+            // portfolio-specific form state
             
-        </CreateEditForm>
-    );
-}
+        
+            // Show flash messages
+            useEffect(() => {
+                if (flash?.success) alert(flash.success);
+                if (flash?.error) alert(flash.error);
+            }, [flash]);
+        
+            // // Log categories and tags for debugging
+            // useEffect(() => {
+            //     console.log('Available Categories:', props.categories);
+            //     console.log('Available Tags:', props.tags);
+            //     console.log('portfolio Data:', portfolio);
+            // }, [props.categories, props.tags, portfolio]);
+        
+            ;
+        useEffect(() => {
+            router.reload({ only: ['categories'] });
+        }, []);
+        
+            const handleSubmit = (formData: any) => {
+                // Combine formData with portfolio-specific fields
+                const data = {
+                    ...formData,
+                    featured_image: formData.featured_image, 
+                    categories: formData.categories || [], 
+                    tags: formData.tags || [],
+                };
+                //  console.log('Final data to submit:', data);
+                // console.log('Submitting data to backend:', data);
+        
+                if (isEdit && portfolio) {
+                    router.put(`/dashboard/edit-portfolio/${portfolio.id}`, data, {
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            router.visit('/dashboard/portfolios');
+                        },
+                        onError: (errors) => {
+                            console.error('Update errors:', errors);
+                            alert('Error updating portfolio: ' + JSON.stringify(errors));
+                        }
+                    });
+                } else {
+                    router.post('/dashboard/create-portfolio', data, {
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            router.visit('/dashboard/portfolios');
+                        },
+                        onError: (errors) => {
+                            console.error('Create errors:', errors);
+                            alert('Error creating portfolio: ' + JSON.stringify(errors));
+                        }
+                    });
+                }
+            };
+        
+            // If editing, prepare initial data with categories and tags
+            const initialData = portfolio ? {
+                title: portfolio.title,
+                slug: portfolio.slug,
+                description: portfolio.description,
+                content: portfolio.content,
+                featured_image: portfolio.featured_image
+                ? Number(portfolio.featured_image)
+                : null,
+                featured_image_url: portfolio.featured_image_url,
+                status: portfolio.status,
+                categories: portfolio.categories, 
+                tags: portfolio.tags, 
+            } : {};
+
+        return (
+            <AppLayout breadcrumbs={breadcrumbs}>
+                <Head title="Portfolio " />
+                <CreateEditForm
+                    title="Create New Portfolio Item"
+                    breadcrumbs={breadcrumbs}
+                    type="portfolio"
+                    initialCategories={categories}
+                    initialTags={tags}
+                    initialData={initialData}
+                    onSubmit={handleSubmit}
+                >
+                
+            </CreateEditForm>
+            </AppLayout>
+
+        );
+    }

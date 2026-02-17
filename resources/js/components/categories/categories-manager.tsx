@@ -102,8 +102,7 @@ export function CategoriesManager({
 
     // Set form for editing
     useEffect(() => {
-       
-        
+            
         if (editingCategory && editingCategory.id) {
             setName(editingCategory.name || '');
             setSlug(editingCategory.slug || '');

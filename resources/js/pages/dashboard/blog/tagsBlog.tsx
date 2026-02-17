@@ -105,6 +105,7 @@ export default function TagsBlog() {
         // NO CONFIRM HERE - It's already handled in TagsManager
         router.delete(`/dashboard/blog-tags/${id}`, {
             preserveScroll: true,
+            preserveState: false,
             onSuccess: () => {
                 router.reload();
             },

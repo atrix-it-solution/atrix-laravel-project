@@ -27,8 +27,8 @@ class DashboardBlogController extends Controller
 
         return Inertia::render('dashboard/blog/all-blog', [
             'blogs' => $blogs,
-            'allCategories' => $allCategories, // For filter dropdown
-            'allTags' => $allTags, // For filter dropdown
+            'allCategories' => $allCategories, 
+            'allTags' => $allTags, 
         ]);
         
     }

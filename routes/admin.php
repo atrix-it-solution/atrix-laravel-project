@@ -61,7 +61,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
         Route::get('/allportfolio', [PortfoliosController::class, 'index'])->name('admin.portfolio');
-        Route::get('/create-portfolio', [PortfoliosController::class, 'create'])->name('admin.portfolio.create');
+          Route::get('/create-portfolio', [PortfoliosController::class, 'create'])
+            ->name('portfolios.create');
+
+        Route::post('/create-portfolio', [PortfoliosController::class, 'store'])
+            ->name('portfolios.store');
+
+        Route::get('/edit-portfolio/{portfolio}', [PortfoliosController::class, 'edit'])
+            ->name('portfolios.edit');
+
+        Route::put('/edit-portfolio/{portfolio}', [PortfoliosController::class, 'update'])
+            ->name('portfolios.update');
+
+        Route::delete('/delete-portfolio/{portfolio}', [PortfoliosController::class, 'destroy'])
+            ->name('portfolios.destroy');
 
         Route::get('/portfolio-categories', [PortfolioCategoriesController::class, 'index'])->name('portfolio-categories.index');
         Route::post('/portfolio-categories', [PortfolioCategoriesController::class, 'store'])->name('portfolio-categories.store');
